@@ -1,13 +1,13 @@
 # CLOUDCOST
-Ferramenta de análise de billing de arquivos CSV de Cloud - Codename Nicke
+Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google e etc.
 
 # Overview
 
-[ESTUDO DE CASO] Script para conversão de versão do vAppliance AWS Application Discovery Service (ADS) para sistemas VMware legados como VMware ESXi 5.5 e inferiores.
+[ESTUDO DE CASO] Este utilitário realiza o processamento sobre os dados gerados em relatórios de billing de Cloud, permitindo a rápida extração de informações de relatórios CSV complexos como Cost Usage Report (CUR), Cost Explorer e outros.
 
-O virtual appliance do EDS da AWS é compilado na versão de hardware da vmware de número 11 (vmx-11). Essa versão de hardware virtual pode não ser compatível com a versão do VMware vSphere que você tem instalado em seu datacenter. Para consultar o Hardware compatibility version acesse https://kb.vmware.com/s/article/2007240#. 
+O objetivo desta ferramenta é permitir a análise dos dados gerados no billing dos provedores de nuvem, usando concorrência/paralelismo para permitir a melhor eficiência na leitura de dados extensos e complexos. 
 
-Este script (bash e Go) tem a intenção de automatizar o processo de alteração do hardware virtual da versão 11 para a versão 10 e alterar o algoritmo de checagem sha256 para sha1, compatíveis com ESXi na versão 5.5. A sequência do script segue o que foi colocado pelo <a href="https://communities.vmware.com/t5/user/viewprofilepage/user-id/1233325">abhilashhb</a> em ‎14-01-2014 no fórum da VMware em <a href="https://communities.vmware.com/t5/ESXi-Discussions/Import-OVF-Template-Unsupported-hardware-family-vmx-10/td-p/2696817">Import OVF Template - Unsupported hardware family 'vmx-10'</a>
+Cenário: O AWS Cost Usage Report ao longo de 30 dias pode gerar dezenas de arquivos CSV com dados de consumo de nuvem detalhados, gerando uma massa de dados que pode ultrapassar GB de armazenamento, para processar toda essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste tipo de cenário este utilitário permite a análise de toda essa massa de dados em segundos, facilitando a rápida extração de informações importantes como custo total, custo por produto consumido, custo individual por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
 
 
 # Uso
