@@ -23,13 +23,15 @@ Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem G
 
 ## Principais recursos
 
-- Análise paralela de dados
+- Uso de pacotes nativos da línguagem
+- Análise paralela de dados usando channels
 - Consulta API Banco Central (PTAX)
 - Pesquisa por palavras (case sensitive)
 - Status de execução e controle de uso de memória
-- Listagem de recursos por tipo de relatório (CUR, Cost Explorer, Microsoft etc)
-- Listagem do cabeçalho de arquivos csv
-- Configurações customizáveis
+- Listagem de cabeçalho de arquivos CSV
+- Busca por padrões adaptativos (CUR, Cost Explorer, Microsoft etc)
+- Configurações customizáveis (limit memory, fee)
+- Listagem usando Pipes
 
 <details>
 
