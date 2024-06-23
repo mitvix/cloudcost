@@ -132,7 +132,9 @@ Tela com outros tipos de saídas
 
 ![screen_savings](https://github.com/mitvix/cloudcost/assets/12394000/7bdc044e-25b7-4dbf-bbcd-8c5b1484d4eb)
 
+![screen_resourceid](https://github.com/mitvix/cloudcost/assets/12394000/334942ab-6057-41eb-ac13-8744d615ea1f)
 
+![screen_usagetype](https://github.com/mitvix/cloudcost/assets/12394000/b978d4fa-e986-4c76-ab97-cf77aac6d45a)
 
 
 ## Benchmark
