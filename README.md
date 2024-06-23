@@ -21,18 +21,6 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 ## [ESTUDO DE CASO]
 Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
 
-## Principais recursos
-
-- Uso de pacotes nativos da línguagem
-- Análise paralela de dados usando channels
-- Consulta API Banco Central (PTAX)
-- Pesquisa por palavras (case sensitive)
-- Status de execução e controle de uso de memória
-- Listagem de cabeçalho de arquivos CSV
-- Busca por padrões adaptativos (CUR, Cost Explorer, Microsoft etc)
-- Configurações customizáveis (limit memory, fee)
-- Listagem usando Pipes
-
 <details>
 
 <summary>Sobre Go e por que essa linguagem</summary>
@@ -143,13 +131,21 @@ Tela com saída padrão de análise do Cost Usage Report
 
 Tempo médio de processamento de arquivos csv
 
-* (37 arquivos * 52MB) = 1.7GB em 5.8s
-* (28 arquivos * 32MB = 757MB em 3.28s
-* (1 arquivo * 424MB) em 2.14s
-* (1 arquivo * 115MB) em 0.56s
+* 1.7GB (37 arquivos * 52MB) em 5.8s (1.960.024 linhas)
+* 757MB (28 arquivos * 32MB) em 3.28s (1.211.316 linhas)
+* 11GB  (1 arquivo * 11GB)   em 1m14s (13.438.628 linhas)
+* 424MB (1 arquivo * 424MB)  em 2.14s (427.229 linhas)
+* 115MB (1 arquivo * 115MB)  em 0.56s (144.117 linhas)
 
 > Hardware 12 × Intel® Core™ i7-9750H CPU @ 2.60GH, 32GB Kernel 6.6.32 (64-bit)
 
+## Pacotes utilizados, consultas API e outros
+
+- Uso de pacotes nativos da línguagem somente
+- RFC4180 CSV https://www.ietf.org/rfc/rfc4180.txt
+- API BC (PTAX) https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/aplicacao#!/recursos
+- ASCII documentation https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+- Debug Memory https://golang.org/pkg/runtime/#MemStats  
 
 ## Nota do Autor e Contato
 
