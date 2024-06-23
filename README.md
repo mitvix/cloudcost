@@ -130,11 +130,11 @@ Tela com saída padrão de análise do Cost Usage Report
 
 Tela com outros tipos de saídas
 
-![screen_savings](https://github.com/mitvix/cloudcost/assets/12394000/7bdc044e-25b7-4dbf-bbcd-8c5b1484d4eb)
+![screen_savings](https://github.com/mitvix/cloudcost/assets/12394000/715cc78e-56bb-4e7d-8616-82a58d0a812a)
 
-![screen_resourceid](https://github.com/mitvix/cloudcost/assets/12394000/334942ab-6057-41eb-ac13-8744d615ea1f)
+![screen_resourceid](https://github.com/mitvix/cloudcost/assets/12394000/2f033df8-78c4-43aa-a775-349644c110fb)
 
-![screen_usagetype](https://github.com/mitvix/cloudcost/assets/12394000/b978d4fa-e986-4c76-ab97-cf77aac6d45a)
+![screen_usagetype](https://github.com/mitvix/cloudcost/assets/12394000/14227dc9-593c-4dbf-8cca-0e9134b7e0e8)
 
 
 ## Benchmark
