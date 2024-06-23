@@ -128,6 +128,13 @@ Tela com saída padrão de análise do Cost Usage Report
 
 ![Tela de saída da análise de arquivos do AWS CUR](https://github.com/mitvix/cloudcost/assets/12394000/c3365a29-b794-4d9b-9f7d-c676c9d4ec68)
 
+Tela com outros tipos de saídas
+
+![screen_savings](https://github.com/mitvix/cloudcost/assets/12394000/7bdc044e-25b7-4dbf-bbcd-8c5b1484d4eb)
+
+
+
+
 ## Benchmark
 
 Tempo médio de processamento de arquivos csv
