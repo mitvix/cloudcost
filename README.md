@@ -14,49 +14,47 @@ Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem G
 
 Go foi projetado inicialmente com o objetivo de substituir projetos em C e C++ dentro do Google, por isso possui características simílares a essas línguagens, incluindo sua síntaxe, mas com abstrações voltadas a simplicidade e legibilidade, além de uma forte combinação de suporte a concorrência e desempenho. Sua estrutura automática de gerenciamento de memória (Garbage Collector) facilita a vida do desenvolvedor, mas gera overhead que a deixa pouco atrás em performance quando comparada a C, C++ e Rust, porém, muito a frente em desempenho em relação a Python, Java, PHP e etc. E mesmo perdendo em performance para Rust e C++, Go se tornou uma línguagem equilibrada que combina estruturas de baixo nível de C com a usabilidade do mundo moderno e sem o pesadelo da Orientação a Objetos, fazendo dela uma línguagem de programação simples, completa e perfeita para o uso em APIs, Micro serviços, Web Dev, Cloud e etc. Dentre os principais projetos escritos em Go, temos Kubernetes, kubectl, Minikube, Docker e outros. Veja mais em [https://go.dev/solutions/cloud#use-case](https://go.dev/solutions/cloud#use-case)
 
-## Uso
+## Instalação
 
 Para instalação do Go siga o passo a passo disponível em [https://go.dev/doc/tutorial/getting-started#install](go.dev).
 
-Para compilação:
+Instalação
 ```
-Use go build main.go; sudo cp main /usr/local/bin/cloudcost
+git clone https://github.com/mitvix/cloudcost
+cd cloudcost
+go build -o cloudcost main.go
 ```
 
-Siga os passos a seguir a partir do binário cloudcost ou cloudcost.exe
+Opcional (copy to bin path)
+```
+sudo cp cloudcost /usr/local/bin
+```
+
+## Uso
 
 Mostrar opções disponíveis do programa
 ```
-Use cloudcost --help
+cloudcost --help
 ```
 
-```
-./convertadsova nome_do_virtual_appliance.ova
-```
-Em sistemas Windows use: 
-```
-./convertadsova.exe nome_do_virtual_appliance.ova
-```
-A partir do código fonte convertads2ova.go use:
-```
-go run convertads2ova.go nome_do_virtual_appliance.ova
-```
+Usage of cloudcost:
 
-Exemplo shell:
-```
-  $ chmod +x convertadsova.sh
+* -account, --account `Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)`
+* -fee, --fee `Define fator de consumo padrão ex: --fee 1.09 (requer --path)`
+* -feemp, --feemp `Define fator de consumo Market Place ex: --feemp 1.7550 (requer --path)`
+* -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
+* -marketplace, --marketplace `Mostra os detalhes de recursos do Market Place`
+* -memlimit, --memlimit `Define max memory MB em uso - tenta controlar GC e pode gerar lentidão`
+* -path, --path `Diretório com arquivos CSV ou arquivo .csv`
+* -resourceid, --resourceid `Mostra detalhes de recursos por ID/arn (ResourceID)`
+* -search, --search `Faz busca nos relatórios min. 2 caracteres (requer --path)`
+* -usagetype, --usagetype `Mostra detalhes do tipo do recurso (UsageType)`
+* -version, --version `Mostra informações sobre a versão e sai`
 
-  $ ./convertadsova.sh ApplicationDiscoveryServiceAgentlessCollector.ova
-```
-## Importando OVF ESXi
 
-Host ESXi/vCenter > Deploy OVF Template > next... next... finish
 
-## Download AWS ADS
 
-Link download AWS ADS <a href="https://s3.us-west-2.amazonaws.com/aws.agentless.discovery.collector.bundle/releases/latest/ApplicationDiscoveryServiceAgentlessCollector.ova" target="_blank">ApplicationDiscoveryServiceAgentlessCollector.ova</a>
-
-## Contato e Nota do Autor
+# Contato e Nota do Autor
 
 * _IMPORTANTE O autor não é programador e não deseja ser um, programar é uma arte, um hobby como dar um Dolio Tchagui ou ir para cozinha para fazer uma Paeja ou um Moti! Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é GPL, encontrou um erro, arrume!_
 
