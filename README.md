@@ -11,8 +11,9 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 
 <summary>Cenário de uso</summary>
 
+## Cenário
 
-> **Cenário**: O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
+> O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
 
 
 </details>
