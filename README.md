@@ -16,27 +16,20 @@ Go foi projetado inicialmente com o objetivo de substituir projetos em C e C++ d
 
 ## Uso
 
-Em sistemas Linux utilize a versão shell do script ou a versão compilada em go
+Para instalação do Go siga o passo a passo disponível em [https://go.dev/doc/tutorial/getting-started#install](go.dev).
 
-Em sistemas Windows utilize a versão compilada em go
-
-Antes de continuar baixe a última versão do VMware-ovftool-XXX-lin.x86_64.bundle.
-
-  https://customerconnect.vmware.com/downloads/get-download?downloadGroup=OVFTOOL441
-
-Baixe o script shell/convertads2ova.sh
-
-[https://github.com/mitvix/convertads2ova.git](https://github.com/mitvix/convertads2ova/archive/refs/heads/main.zip)
-
-Shell 
-
+Para compilação:
 ```
-Use ./convertadsova.sh nome_do_virtual_appliance.ova
+Use go build main.go; sudo cp main /usr/local/bin/cloudcost
 ```
 
-Go 
+Siga os passos a seguir a partir do binário cloudcost ou cloudcost.exe
 
-Em sistemas Linux use: 
+Mostrar opções disponíveis do programa
+```
+Use cloudcost --help
+```
+
 ```
 ./convertadsova nome_do_virtual_appliance.ova
 ```
