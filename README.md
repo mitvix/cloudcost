@@ -13,11 +13,20 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 
 ## Cenário
 
-> O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
+> O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente, além de outras customizações e informações importantes.
 
 
 </details>
 
+## Principais recursos
+
+- Análise paralela de dados
+- Consulta API Banco Central (PTAX)
+- Pesquisa por palavras (case sensitive)
+- Status de execução e controle de uso de memória
+- Listagem de recursos por tipo de relatório (CUR, Cost Explorer, Microsoft etc)
+- Listagem do cabeçalho de arquivos csv
+- Configurações customizáveis
 
 ## [ESTUDO DE CASO]
 Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
@@ -125,6 +134,10 @@ Retorna somente os dados das contas X e Y
 ```
 cloudcost report_file.csv --account 123456789090,098765432109
 ```
+
+Tela com saída padrão de análise do Cost Usage Report
+
+![Tela de saída da análise de arquivos do AWS CUR](https://github.com/mitvix/cloudcost/assets/12394000/c3365a29-b794-4d9b-9f7d-c676c9d4ec68)
 
 ## Benchmark
 
