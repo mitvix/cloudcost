@@ -150,7 +150,7 @@ Tempo médio de processamento de arquivos csv
 
 ## Nota do Autor e Contato
 
-* _IMPORTANTE O autor não é programador e não deseja ser um, programar é uma arte, um hobby como dar um Dolio Tchagui ou ir para cozinha para fazer uma Paeja ou um Moti! Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é GPL, encontrou um erro, arrume!_
+* _IMPORTANTE O autor não é programador e não deseja ser um, programar é uma arte, um hobby como dar um Dolio Tchagui ou ir para cozinha para fazer uma Paeja ou um Moti! Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é GPL, encontrou um erro, arrume! o código está cheio deles..._
 
 Alex Manfrin <mitvix@hotmail.com>
 Linkedin - https://www.linkedin.com/in/alexandermanfrin/
