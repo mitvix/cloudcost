@@ -148,7 +148,7 @@ Tempo médio de processamento de arquivos csv
 * 115MB (1 arquivo * 115MB)  em 0.56s (144.117 linhas)
 
 > Hardware 12 × Intel® Core™ i7-9750H CPU @ 2.60GH, 32GB Kernel 6.6.32 (64-bit);
-> GC Control: Garbage Collector ilimitado até 12GB (--memlimit para alterar)
+> GC Control: Garbage Collector limitado até 12GB (--memlimit para alterar)
 
 ## Pacotes utilizados, consultas API e outros
 
