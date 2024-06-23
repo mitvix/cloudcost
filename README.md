@@ -14,7 +14,7 @@ Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem G
 
 <details>
 
-<summary>Sobre Go e porque essa linguagem</summary>
+<summary>Sobre Go e por que essa linguagem</summary>
 
 ### Golang
 
@@ -81,7 +81,7 @@ Consumo
 
 | INÍCIO     |  FIM        |  PTAX              | FATOR  |  CONSUMO USD |  CONSUMO BRL | 
 | --- | --- | --- | --- | --- | --- |
-| Data de início |  Data final |  Cotação do Dólar e data | Fator de cobrança |  Total em dólar |  Todal em reais | 
+| Data de início |  Data final |  Cotação do Dólar e data | Fator de cobrança |  Total em dólar |  Total em reais | 
 
 Exemplo
 | INÍCIO     |  FIM        |  PTAX              | FATOR  |  CONSUMO USD |  CONSUMO BRL | 
@@ -93,12 +93,25 @@ Outras saídas
 * Resource Id
 * Usage Type
 * Market Place
+* Savings
 * Credits
 * Support
 
 ### Exemplos
 
+Retorna o UsageType e informações sobre ExtendedSupport e RDS
+```
+cloudcost path_file_csv/ --usagetype --search ExtendedSupport,RDS
+```
 
+Retorna o Resource ID e todos os recursos que contém snapshots
+```
+cloudcost path_file_csv/ --resourceid --search snapshot
+```
+Retorna somente os dados das contas X e Y
+```
+cloudcost report_file.csv --account 123456789090,098765432109
+```
 
 
 ## Nota do Autor e Contato
