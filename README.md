@@ -18,6 +18,9 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 
 </details>
 
+## [ESTUDO DE CASO]
+Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
+
 ## Principais recursos
 
 - Análise paralela de dados
@@ -27,11 +30,6 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 - Listagem de recursos por tipo de relatório (CUR, Cost Explorer, Microsoft etc)
 - Listagem do cabeçalho de arquivos csv
 - Configurações customizáveis
-
-## [ESTUDO DE CASO]
-Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
-
-
 
 <details>
 
