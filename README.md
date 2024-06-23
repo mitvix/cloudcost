@@ -133,7 +133,7 @@ Tempo médio de processamento de arquivos csv
 
 * 1.7GB (37 arquivos * 52MB) em 5.8s (1.960.024 linhas)
 * 757MB (28 arquivos * 32MB) em 3.28s (1.211.316 linhas)
-* 11GB  (1 arquivo * 11GB)   em 1m14s (13.438.628 linhas)
+* 11GB  (1 arquivo * 11GB)   em 1m14s (13.438.628 linhas) c/ GC control
 * 424MB (1 arquivo * 424MB)  em 2.14s (427.229 linhas)
 * 115MB (1 arquivo * 115MB)  em 0.56s (144.117 linhas)
 
