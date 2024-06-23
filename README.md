@@ -25,6 +25,12 @@ cd cloudcost
 go build -o cloudcost main.go
 ```
 
+Opcional (Compilação para Windows)
+```
+export GOOS=windows
+go build -o cloudcost.exe main.go
+```
+
 Opcional (copy to bin path)
 ```
 sudo cp cloudcost /usr/local/bin
@@ -37,24 +43,42 @@ Mostrar opções disponíveis do programa
 cloudcost --help
 ```
 
-Usage of cloudcost:
+Argumentos:
 
+* -path, --path `Diretório com arquivos CSV ou arquivo .csv`
+* -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
 * -account, --account `Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)`
 * -fee, --fee `Define fator de consumo padrão ex: --fee 1.09 (requer --path)`
 * -feemp, --feemp `Define fator de consumo Market Place ex: --feemp 1.7550 (requer --path)`
-* -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
 * -marketplace, --marketplace `Mostra os detalhes de recursos do Market Place`
 * -memlimit, --memlimit `Define max memory MB em uso - tenta controlar GC e pode gerar lentidão`
-* -path, --path `Diretório com arquivos CSV ou arquivo .csv`
 * -resourceid, --resourceid `Mostra detalhes de recursos por ID/arn (ResourceID)`
-* -search, --search `Faz busca nos relatórios min. 2 caracteres (requer --path)`
+* -search, --search `Faz busca nos relatórios min. 2 caracteres`
 * -usagetype, --usagetype `Mostra detalhes do tipo do recurso (UsageType)`
 * -version, --version `Mostra informações sobre a versão e sai`
 
+## Saídas
 
+Consumo
 
+| INÍCIO     |  FIM        |  PTAX              | FATOR  |  CONSUMO USD |  CONSUMO BRL | 
+| --- | --- | --- | --- | --- | --- |
+| Data de início |  Data final |  Cotação do Dólar e data | Fator de cobrança |  Total em dólar |  Todal em reais | 
 
-# Contato e Nota do Autor
+Exemplo
+| INÍCIO     |  FIM        |  PTAX              | FATOR  |  CONSUMO USD |  CONSUMO BRL | 
+| --- | --- | --- | --- | --- | --- |
+| 01-03-2024 | 31-03-2024 | 4.9962 2024-03-28 |  1 | US$ 4094.42 | R$ 22911.31 |
+
+Outras saídas
+
+* Resource Id
+* Usage Type
+* Market Place
+* Credits
+* Support
+
+# Nota do Autor e Contato
 
 * _IMPORTANTE O autor não é programador e não deseja ser um, programar é uma arte, um hobby como dar um Dolio Tchagui ou ir para cozinha para fazer uma Paeja ou um Moti! Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é GPL, encontrou um erro, arrume!_
 
