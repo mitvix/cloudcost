@@ -7,10 +7,17 @@ Este utilitário realiza o processamento sobre os dados gerados em relatórios d
 
 O objetivo desta ferramenta é permitir a análise dos dados de billing dos provedores de nuvem, usando concorrência/paralelismo para permitir a melhor eficiência na leitura de dados extensos e complexos sem a necessidade de soluções de BI.
 
+<details>
+
+<summary>Cenário</summary>
+
 **Cenário**: O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
+</details>
 
 ## [ESTUDO DE CASO]
 Software criado _(nas raras horas vagas)_ para estudo e análise da línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
+
+
 
 <details>
 
