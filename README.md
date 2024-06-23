@@ -12,14 +12,7 @@ O objetivo desta ferramenta é permitir a análise dos dados de billing dos prov
 <summary>Cenário de uso</summary>
 
 
-**Cenário**: O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
-
-
-Tempo médio de processamento de arquivos csv
-* (37 arquivos * 52MB) = 1.7GB em 5.8s
-* (28 arquivos * 32MB = 757MB em 3.28s
-* (1 arquivo * 424MB) em 2.14s
-* (1 arquivo * 115MB) em 0.56s
+> **Cenário**: O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
 
 
 </details>
@@ -132,6 +125,16 @@ Retorna somente os dados das contas X e Y
 cloudcost report_file.csv --account 123456789090,098765432109
 ```
 
+## Benchmark
+
+Tempo médio de processamento de arquivos csv
+
+* (37 arquivos * 52MB) = 1.7GB em 5.8s
+* (28 arquivos * 32MB = 757MB em 3.28s
+* (1 arquivo * 424MB) em 2.14s
+* (1 arquivo * 115MB) em 0.56s
+
+> Hardware 12 × Intel® Core™ i7-9750H CPU @ 2.60GH, 32GB Kernel 6.6.32 (64-bit)
 
 
 ## Nota do Autor e Contato
