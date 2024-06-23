@@ -1,7 +1,7 @@
 # CLOUDCOST
 Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google e etc.
 
-# Overview
+## Overview
 
 Este utilitário realiza o processamento sobre os dados gerados em relatórios de billing de Cloud, permitindo a rápida extração de informações de relatórios CSV complexos como Cost Usage Report (CUR), Cost Explorer e outros.
 
@@ -9,12 +9,12 @@ O objetivo desta ferramenta é permitir a análise dos dados gerados no billing 
 
 Cenário: O AWS Cost Usage Report ao longo de 30 dias pode gerar dezenas de arquivos CSV com dados de consumo de nuvem detalhados, gerando uma massa de dados que pode ultrapassar GB de armazenamento, para processar toda essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste tipo de cenário este utilitário permite a análise de toda essa massa de dados em segundos, facilitando a rápida extração de informações importantes como custo total, custo por produto consumido, custo individual por conta, resource ID, usage type, PTAX, fator de cobrança quando existente e outras informações.
 
-# [ESTUDO DE CASO]
+## [ESTUDO DE CASO]
 Software criado (nas raras horas vagas) para fins de estudos e análise sobre a línguagem Go (Golang) disponível em [go.dev](https://go.dev). Línguagem de programação opensource criada por [Rob Pike](https://pt.wikipedia.org/wiki/Rob_Pike), [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer) e [Ken Thompson](https://pt.wikipedia.org/wiki/Ken_Thompson) nos laboratórios do Google em meados de 2007 e liberado sob licença opensource BSD em 2009.
 
 Go foi projetado inicialmente com o objetivo de substituir projetos em C e C++ dentro do Google, por este motivo possui características muito simílares a essas línguagens, incluindo parte de sua síntaxe, mas com abstrações mais voltadas a simplicidade e legibilidade, além de uma forte combinação de suporte a concorrência e desempenho. Sua estrutura automática de gerenciamento de memória (Garbage Collector) facilita a vida do desenvolvedor, embora este fato propicie a perda de performance em certos casos, a deixando pouco atrás em performance quando comparada a C, C++ e Rust, porém, muito a frente em desempenho em relação a línguagens como Python e Java. E mesmo perdendo em performance para Rust e C++, Go se tornou uma línguagem equilibrada que combina as estruturas de baixo nível de C com a usabilidade do mundo moderno e cross platform, sem o pesadelo da Orientação a Objetos, fazendo dela uma línguagem de programação simples, completa e perfeita para o uso em APIs, Micro serviços, Web Development, Cloud, CLI e outros. Dentre os principais projetos escritos em Go, temos Kubernetes, kubectl, Minikube e etc. Veja mais em [https://go.dev/solutions/cloud#use-case](https://go.dev/solutions/cloud#use-case)
 
-# Uso
+## Uso
 
 Em sistemas Linux utilize a versão shell do script ou a versão compilada em go
 
@@ -55,16 +55,16 @@ Exemplo shell:
 
   $ ./convertadsova.sh ApplicationDiscoveryServiceAgentlessCollector.ova
 ```
-# Importando OVF ESXi
+## Importando OVF ESXi
 
 Host ESXi/vCenter > Deploy OVF Template > next... next... finish
 
-# Download AWS ADS
+## Download AWS ADS
 
 Link download AWS ADS <a href="https://s3.us-west-2.amazonaws.com/aws.agentless.discovery.collector.bundle/releases/latest/ApplicationDiscoveryServiceAgentlessCollector.ova" target="_blank">ApplicationDiscoveryServiceAgentlessCollector.ova</a>
 
 
-# Contato
+## Contato
 
 Alex Manfrin <alexmanfrin@gmail.com>
 
