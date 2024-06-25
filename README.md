@@ -174,7 +174,7 @@ Análise de relatórios terceiros                  :  81%
 Análise de relatórios Cost Explorer              :  49% w/ issues
 Análise de relatórios Microsoft                  :  1%
 Análise de relatórios Google                     :  1%
-Funções de pesquisas customizadas --search       :  63%
+Funções de pesquisas customizadas --search       :  63% w/ issues
 Função de coleta de dólar ptax                   :  77% w/ issues
 Função export para TXT                           :  4%
 Função export para PDF                           :  0%
