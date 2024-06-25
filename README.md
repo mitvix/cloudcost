@@ -163,7 +163,7 @@ Tempo médio de processamento de arquivos csv
 Lista de objetivos para o programa
 
 ```
-Carregamento de gigabytes em segundos            :  91%
+Carregamento de gigabytes em segundos            :  97%
 Análise de custos por conta                      :  70%
 Manutenção externa de padrões de cabeçalho csv   :  1%
 Multiplicação de fator / ptax por produto        :  1%
