@@ -159,6 +159,28 @@ Tempo médio de processamento de arquivos csv
 - ASCII documentation https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - Debug Memory https://golang.org/pkg/runtime/#MemStats  
 
+## GOAL
+Lista de objetivos para o programa
+
+```
+Carregamento de gigabytes em segundos            :  91%
+Análise de custos por conta                      :  70%
+Manutenção externa de padrões de cabeçalho csv   :  1%
+Multiplicação de fator / ptax por produto        :  1%
+Uso de fator de consumo/marketplace customizado  :  55%
+Uso de ptax customizada                          :  15%
+Análise de relatórios AWS CUR                    :  71%
+Análise de relatórios terceiros                  :  81%
+Análise de relatórios Cost Explorer              :  49% w/ issues
+Análise de relatórios Microsoft                  :  1%
+Análise de relatórios Google                     :  1%
+Funções de pesquisas customizadas --search       :  63%
+Função de coleta de dólar ptax                   :  77% w/ issues
+Função export para TXT                           :  4%
+Função export para PDF                           :  0%
+
+```
+
 ## Nota do Autor e Contato
 
 * _IMPORTANTE O autor não é programador e não deseja ser um, programar é uma arte, um hobby como dar um Dolio Tchagui ou ir para cozinha para fazer uma Paeja ou um Moti! Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é GPL, encontrou um erro, arrume! provavelmente há vários deles..._
