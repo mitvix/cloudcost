@@ -12,7 +12,7 @@ const Max_limitfiles = 512 // limit files to analysis 0 = ilimited caution!
 const Max_memlimit = 12e+9 // 12e+9 Example 12GB (8GB = 8e+9) 0 == ilimited
 const Max_charprint = 100  // max characters to print product name
 
-var Memory_alert int64 = 12000         // Memory alert > (12GB = 8e+9) = red(MemSys)
+var Memory_alert int64 = 12000         // Memory alert > (12GB = 12e+9) = red(MemSys)
 const Ptaxlayout string = "01-02-2006" // 01 (month) 02 (day) 06 (year)
 const Datelayout string = "02-01-2006" // BC API layout 02 (day) 01 (month) 06 (year)
 const PtaxTimeout time.Duration = 3    // http.Client {Timeout: T * time.Second }
@@ -32,7 +32,7 @@ const InnerBar string = "[ ....................................... ]" // 39 posi
 
 // Main Strings and Values
 const (
-	Version  string = "0.0.21"
+	Version  string = "0.0.22"
 	Program  string = "Cloud Cost Report Reader"
 	Codename string = "codename Nicke"
 	Aws_cexp string = "AWS Cost Explorer"
@@ -40,6 +40,13 @@ const (
 	Pmc      string = "PMC"
 	Azure    string = "Microsoft Azure"
 	Google   string = "Google GCP"
+
+	// define report cloud
+	RepAws    string = "aws"
+	RepOci    string = "oci"
+	RepAzure  string = "azure"
+	RepGoogle string = "google"
+	RepHuawei string = "huawei"
 
 	Src_cexp string = "LinkedAccountId" // aws cost explorer US
 	Src_cost string = "InvoiceID"
@@ -61,6 +68,7 @@ const (
 	Flagresrcid string = "resourceid"
 	Flagmarkplc string = "marketplace"
 	Flagmemlimt string = "memlimit"
+	Flagresrcgr string = "resourcegroup"
 	Flagnopipe  string = "nopipe"
 	Flagsearch  string = "search"
 	Flagversion string = "version"
@@ -75,6 +83,7 @@ const (
 	Msg_flagptax string = "Define PTAX padrão manualmente (requer --path)"
 	Msg_flaghed  string = "Mostra o cabeçalho do arquivo CSV (requer --path)"
 	Msg_flagrsc  string = "Mostra detalhes do tipo do recurso (UsageType)"
+	Msg_flagrsg  string = "Mostra custos por Resource Group em relatórios Microsoft Azure"
 	Msg_flagrid  string = "Mostra detalhes de recursos por ID/arn (ResourceID)"
 	Msg_flagmkl  string = "Mostra os detalhes de recursos do Market Place"
 	Msg_memlimt  string = "Define max memory MB em uso - tenta controlar GC e pode gerar lentidão"
@@ -90,6 +99,7 @@ const (
 	Msg_source     string = "Billing:"
 	Msg_rsrctype   string = "Usage type:"
 	Msg_resrcid    string = "Resource IDs:"
+	Msg_resrgrp    string = "Resource Group:"
 	Msg_total      string = "Total:"
 	Msg_usage      string = "Consumo:"
 	Msg_ptaxglb    string = "Ptax:"
@@ -165,6 +175,7 @@ var (
 	ResourceCost  = []string{"Resource Cost"}
 	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost"}
 	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode"}
+	ReportCloud   = []string{"aws", "azure", "google", "huawei", "oci"}
 )
 
 var (
