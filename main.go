@@ -38,6 +38,7 @@ type Billing struct {
 	totalUSD float64
 	totalBRL float64
 	platform string
+	repcloud string
 }
 
 // store csv field position
@@ -52,6 +53,7 @@ type Fields struct {
 	pos_costbrl  int
 	pos_currency int
 	pos_resident int
+	pos_repcloud int
 }
 
 type Ptax struct {
@@ -105,7 +107,7 @@ func main() {
 	}
 
 	// enviroment variables
-	var platform string
+	var platform, repcloud string
 	args := map[string]string{}
 	goversion := runtime.Version()
 	timeststart := time.Now()
@@ -151,10 +153,12 @@ func main() {
 		supptotal,
 		usage,
 		savitotal float64
-	) // market place resource sum
+	)
 
+	// market place resource sum
 	var total_brl, total_usage, feemp_usd, fee_value, ptax_flt float64 // total usage + fee values
 	var sumusd, sumbrl, checksum float64                               // main sum values + checksum
+
 	var savings bool
 
 	// columns tabwriter.(TabIndent|StripEscape|AlignRight|DiscardEmptyColumns|Debug)
@@ -182,6 +186,7 @@ func main() {
 	rscIdet := flag.Bool(global.Flagresrcid, false, global.Msg_flagrid)
 	rscMkpl := flag.Bool(global.Flagmarkplc, false, global.Msg_flagmkl)
 	nosPipe := flag.Bool(global.Flagnopipe, false, global.Msg_nopipe)
+	rscGrop := flag.Bool(global.Flagresrcgr, false, global.Msg_flagrsg)
 
 	memLimt := flag.Int64(global.Flagmemlimt, 0, global.Msg_memlimt)
 
@@ -380,7 +385,9 @@ func main() {
 		products = utils.RemoveDuplicate(&billing.products)
 		currency = utils.RemoveDuplicate(&billing.currency)
 		platform = billing.platform
+		repcloud = billing.repcloud
 	}
+
 	// cancel progress bar
 	if progress_bar {
 		timestop := time.Since(timeststart)
@@ -397,6 +404,38 @@ func main() {
 		}
 		fmt.Print(" ] [ ", timestop, " ] \n\n")
 
+	}
+
+	// try to get Ptax from API BC in json with concurrency
+	for i, dt_finish := range fdate {
+
+		var ptaxvalue []string
+
+		wg.Add(1)
+		go GetPtax(&dt_finish, global.SymbolUSD, chp, &wg)
+		cotacao = <-chp
+
+		// take care with this s*
+		date_str = sdate[i][:10]
+
+		// cut initial date using length bytes
+		date_end = fdate[i][:10] // cut end date using length bytes
+
+		// proccess ptax response in Online mode (cotacao.Offline == false)
+		if !cotacao.Offline {
+			// control ptax custom values
+			msg_conn = global.Msg_connon
+			ptaxstr := fmt.Sprintf("%v %v", cotacao.CotacaoVenda, cotacao.DataHoraCotacao)
+			ptaxvalue = append(ptaxvalue, ptaxstr)
+			ptax_valdate = ptaxvalue[i][:18] // cut ptax + date using length bytes
+
+			// convert ptax string to float64
+			ptax_flt, _ = strconv.ParseFloat(ptax_valdate[:6], 64)
+
+			// try to emulate fee brl
+			total_usage = ptax_flt * sumusd // multiply ptax times usd total
+
+		}
 	}
 
 	if !slices.Contains(currency, global.SymbolUSD) {
@@ -447,14 +486,17 @@ func main() {
 	}
 
 	// prints platform
-	fmt.Fprintf(w, "%v\t%v\t\n\n", global.Msg_source, platform)
+	fmt.Fprintf(w, "%v\t%v-%v\t\n\n", global.Msg_source, platform, repcloud)
 
 	// prints account
 	fmt.Printf("%v\n\n", global.Msg_accout)
 	fmt.Fprintf(w, global.Account_Header)
 	for key, value := range accountBrlTotal {
-		vusd := accountUsdTotal[key] // get usd value for each account
-		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", key, global.Msg_SymblUS, value, cursymbol, vusd)
+		if repcloud == global.RepAzure {
+			value = value / ptax_flt
+		}
+		vtotal := accountUsdTotal[key] // get usd value for each account
+		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", key, global.Msg_SymblUS, value, cursymbol, vtotal)
 	}
 	w.Flush()
 
@@ -462,14 +504,18 @@ func main() {
 	fmt.Fprintf(w, global.Product_Header)
 
 	// prints products with max char control
-
 	for pkey, value := range prodBrlTotal {
 
 		if len(pkey) > global.Max_charprint {
 			pkey = pkey[:global.Max_charprint]
 		}
-		vusd := prodUsdTotal[pkey] // get usd value for each resource
-		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", pkey, global.Msg_SymblUS, vusd, cursymbol, value)
+
+		vtotal := prodUsdTotal[pkey] // get usd value for each resource
+
+		if repcloud == global.RepAzure {
+			vtotal = vtotal / ptax_flt
+		}
+		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", pkey, global.Msg_SymblUS, vtotal, cursymbol, value)
 
 		checksum += value
 		// run slice to check string (credprefix) into string (key)
@@ -548,6 +594,41 @@ func main() {
 		utils.ShowPipeData(rsceUsdIdent, rsceBrlIdent, &cursymbol, global.PipeLine, w, global.Msg_resrcid)
 	}
 
+	if *rscGrop {
+		// load only for Azure reports
+		if repcloud == global.RepAzure {
+			// Create aux map to store sum
+			sumById := map[string]float64{}
+			var strId string
+			var isKey []string
+			// Running map "rsceBrlIdent"
+			for id, value := range rsceBrlIdent {
+				isKey = strings.Split(id, "/")
+				if len(isKey) > 4 {
+					strId = isKey[4]
+				}
+
+				// Check if ID exists in aux map
+				_, exist := sumById[strId]
+
+				// If ID not exists, add to aux map with original value
+				if !exist {
+					sumById[strId] = value
+				} else {
+					// If Id exists, sum value into
+					sumById[strId] += value
+				}
+			}
+
+			// Print map "somaPorId"
+			fmt.Printf("\n%v\n\n", text.Bold(global.Msg_resrgrp))
+			for id, sum := range sumById {
+				fmt.Fprintf(w, "\t%v\t%v %.2f\n", id, global.Msg_SymblBR, sum)
+			}
+			w.Flush()
+		}
+	}
+
 	// summarize total usage
 	usage = sumbrl - mpbrltotal - supptotal
 
@@ -558,38 +639,6 @@ func main() {
 	// 	ptax_valdate = fmt.Sprintf("%.4f", ptax_flt)
 	// 	total_usage = ptax_flt * sumusd
 	// }
-
-	// try to get Ptax from API BC in json with concurrency
-	for i, dt_finish := range fdate {
-
-		var ptaxvalue []string
-
-		wg.Add(1)
-		go GetPtax(&dt_finish, global.SymbolUSD, chp, &wg)
-		cotacao = <-chp
-
-		// take care with this s*
-		date_str = sdate[i][:10]
-
-		// cut initial date using length bytes
-		date_end = fdate[i][:10] // cut end date using length bytes
-
-		// proccess ptax response in Online mode (cotacao.Offline == false)
-		if !cotacao.Offline {
-			// control ptax custom values
-			msg_conn = global.Msg_connon
-			ptaxstr := fmt.Sprintf("%v %v", cotacao.CotacaoVenda, cotacao.DataHoraCotacao)
-			ptaxvalue = append(ptaxvalue, ptaxstr)
-			ptax_valdate = ptaxvalue[i][:18] // cut ptax + date using length bytes
-
-			// convert ptax string to float64
-			ptax_flt, _ = strconv.ParseFloat(ptax_valdate[:6], 64)
-
-			// try to emulate fee brl
-			total_usage = ptax_flt * sumusd // multiply ptax times usd total
-
-		}
-	}
 
 	// validate connection
 	if cotacao.Offline {
@@ -645,6 +694,9 @@ func main() {
 	// SHOW DEFAULT USAGE
 	fmt.Printf("\n%v\n\n", global.Msg_usage)
 	fmt.Fprintf(w, "\t%v\n", global.Resource_Header)
+	if repcloud == global.RepAzure {
+		sumusd = sumusd / ptax_flt
+	}
 	fmt.Fprintf(w, "\t%v\t\t%v\t\t%v\t\t%v\t\t%v %.2f\t\t%v %.2f\n", date_str, date_end, ptax_valdate, fee_sval, global.Msg_SymblUS, sumusd, cursymbol, usage)
 	w.Flush()
 
@@ -760,33 +812,34 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 	for k, v := range *mhead {
 		switch {
 		case slices.Contains(global.StartDate, k):
-			fp.pos_sdate = v
+			fp.pos_sdate = v // start date position
 		case slices.Contains(global.EndDate, k):
-			fp.pos_fdate = v
+			fp.pos_fdate = v // finish date position
 		case slices.Contains(global.CompanyName, k):
-			fp.pos_company = v
+			fp.pos_company = v // company position
 		case slices.Contains(global.UsageAccount, k):
-			fp.pos_accounts = v
+			fp.pos_accounts = v // accounts position
 		case slices.Contains(global.ProductName, k):
-			fp.pos_products = v
+			fp.pos_products = v // products position
 		case slices.Contains(global.UsageType, k):
-			fp.pos_usagtype = v
+			fp.pos_usagtype = v // usagetype position
 		case slices.Contains(global.ResourceCost, k):
-			// if non PMC get position from ResourceCost
 			if *cloudcsv == global.Pmc {
-				fp.pos_costusd = v
+				fp.pos_costusd = v // cost usd position
 			}
 		case slices.Contains(global.FinalCost, k):
-			// if PMC get position from FinalCost
 			if *cloudcsv != global.Pmc {
-				fp.pos_costusd = v // USD reports
+				fp.pos_costusd = v // cost usd position
 			}
-			fp.pos_costbrl = v // BRL reports
+			fp.pos_costbrl = v // cost brl position
+		case slices.Contains(global.ReportCloud, k):
+			fp.pos_repcloud = v // Report Cloud
 		case slices.Contains(global.CurrencyCode, k):
-			fp.pos_currency = v
+			fp.pos_currency = v // currency position
 		case slices.Contains(global.ResourceIdent, k):
-			fp.pos_resident = v
+			fp.pos_resident = v // resource id position
 		}
+
 	}
 
 	for {
@@ -818,7 +871,7 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 		if count != 0 {
 			switch {
 			case args[global.Flagaccount] != "":
-				// FIX-ME when run --account I load data with all data fallthrough don´t help
+				// FIX-ME when run --account I load data with all data fallthrough it's don´t help
 				argaccount := strings.Split(args[global.Flagaccount], ",")
 				for _, arg := range argaccount {
 					if arg == rln[fp.pos_accounts] {
@@ -845,6 +898,7 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 func appendData(data *Billing, rln []string, cloudcsv *string, fp Fields) *Billing {
 
 	data.platform = *cloudcsv
+	data.repcloud = rln[fp.pos_repcloud] // do not use append
 
 	data.sdate = append(data.sdate, rln[fp.pos_sdate])
 
@@ -874,10 +928,11 @@ func appendData(data *Billing, rln []string, cloudcsv *string, fp Fields) *Billi
 }
 
 // check for default csv delimiter (rune - named return)
+// https://www.ietf.org/rfc/rfc4180.txt
 func csvDelimiter(filename *string) (runecsv rune) {
-	// https://www.ietf.org/rfc/rfc4180.txt
+
 	var headercsv string
-	//var runecsv rune
+
 	var err error
 
 	file, err := os.Open(*filename)
