@@ -155,7 +155,6 @@ func ParseDatetoTime(date string) (y int, m time.Month, d int) {
 		y = dt.Year()
 		m = dt.Month()
 		d = dt.Day()
-
 	} else {
 		dt, _ = time.Parse(global.Datelayout, date) // parse date with default layout
 		//date = dt.Format(layout_ptax)
