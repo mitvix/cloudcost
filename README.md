@@ -80,6 +80,7 @@ Argumentos:
 * -fee, --fee `Define fator de consumo padrão ex: --fee 1.09 (requer --path)`
 * -feemp, --feemp `Define fator de consumo Market Place ex: --feemp 1.7550 (requer --path)`
 * -marketplace, --marketplace `Mostra os detalhes de recursos do Market Place`
+* -resourcegroup, --resourcegroup `Mostra custos por Resource Group em relatórios Microsoft Azure`
 * -memlimit, --memlimit `Define max memory MB em uso - tenta controlar GC e pode gerar lentidão`
 * -resourceid, --resourceid `Mostra detalhes de recursos por ID/arn (ResourceID)`
 * -search, --search `Faz busca nos relatórios min. 2 caracteres`
