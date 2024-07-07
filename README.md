@@ -37,7 +37,7 @@ Dentre os principais projetos escritos em Go, temos Kubernetes, kubectl, Minikub
 
 ### Por que Go ?
 
-_Seria em Rust, mas a partir do capítulo 5 Rust se tornou complexo demais_
+_"Seria em Rust, mas a partir do capítulo 5 Rust se tornou complexo demais"_
 
 O objetivo foi de focar esforços no aprendizado de uma línguagem moderna para pequenos projetos paralelos, em Go foi possível encontrar uma curva de aprendizado curta, pois sua semântica segue padrões já conhecidos de outras línguagens como C, mas sem as dores do uso de uma línguagem nosafe. Aliado a capacidade de criar códigos usando concorrência e paralelismo de forma rápida e simples, Go demonstrou ser a opção mais adequada para o objetivo de percorrer gigabytes de arquivos em busca de padrões para extrair informações de forma rápida e precisa sem a necessidade de um doutorado para isso.
 
