@@ -47,11 +47,12 @@ O objetivo foi de focar esforços no aprendizado de uma línguagem moderna para 
 
 Para instalação do Go siga o passo a passo disponível em [https://go.dev/doc/tutorial/getting-started#install](go.dev).
 
-Instalação
+Instalação (Linux)
 ```
 git clone https://github.com/mitvix/cloudcost
 cd cloudcost
 go build -o cloudcost main.go
+sudo mv cloudcost /usr/local/bin/cloudcost
 ```
 
 Opcional (Compilação para Windows)
@@ -60,7 +61,7 @@ export GOOS=windows
 go build -o cloudcost.exe main.go
 ```
 
-Opcional (Linux)
+Opcional (Binário Linux)
 ```
 tar zxvf cloudcost-amd64-linux.tar.gz
 chmod +x cloudcost-amd64-linux
