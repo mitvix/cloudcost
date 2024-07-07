@@ -1,0 +1,3 @@
+c5577f741040dd74b74820baac542da6ffd0b8da  cloudcost-amd64-darwin.tar.gz
+8bc59a31a4cdec76a1854e018d4c9ed3dd81aa2c  cloudcost-amd64-linux.tar.gz
+ed15975a4f0c471423811563036451aa0db7a3d0  cloudcost-amd64-windows.zip
