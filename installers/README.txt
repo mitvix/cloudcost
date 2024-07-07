@@ -1,0 +1,10 @@
+SHA1 Binaries
+
+0cf45d7368535d76f5bbfae87d6e4eac515fcd60  cloudcost-amd64-darwin
+eda5bc28b72f48dd8d57f4f7ecdda4eead1b1cd3  cloudcost-amd64-darwin.tar.gz
+
+4f4c97cf7c6c95b8f28f42f75a4099b2a478d4d3  cloudcost-amd64-linux
+139626462cbdfb565887e0f4eb66de5a9a03af18  cloudcost-amd64-linux.tar.gz
+
+2294772a1fa6ef35dfac9ea7ca52cfdc60494f58  cloudcost-amd64-windows.exe
+86f76edbf15bbc3debcc82ec36afadf8247099c1  cloudcost-amd64-windows.tar.gz
