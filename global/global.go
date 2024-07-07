@@ -32,12 +32,12 @@ const InnerBar string = "[ ....................................... ]" // 39 posi
 
 // Main Strings and Values
 const (
-	Version  string = "0.0.22"
+	Version  string = "0.0.23"
 	Program  string = "Cloud Cost Report Reader"
-	Codename string = "codename Nicke"
+	Codename string = "codename Stallman"
 	Aws_cexp string = "AWS Cost Explorer"
 	Aws_cur  string = "AWS Cost Usage Report"
-	Pmc      string = "PMC"
+	Cmp      string = "Cmp"
 	Azure    string = "Microsoft Azure"
 	Google   string = "Google GCP"
 
@@ -50,7 +50,7 @@ const (
 
 	Src_cexp string = "LinkedAccountId" // aws cost explorer US
 	Src_cost string = "InvoiceID"
-	Src_pmc  string = "Usage Account"
+	Src_Cmp  string = "Usage Account"
 	Src_cur  string = "lineItem/UsageAccountId"
 	Src_azur string = "SubscriptionId"
 	Src_gcp  string = "billing_account_id"
@@ -163,14 +163,14 @@ var (
 
 )
 
-// Field Position on CSV files (PMC, PMC GOV, CUR, Cost Explorer)
+// Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer)
 var (
 	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate"}
 	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate"}
 	CompanyName   = []string{"Company Name", "bill/InvoicingEntity", "PayerAccountName"}
 	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName"}
 	ProductName   = []string{"Product Name", "product/ProductName", "ProductName"}
-	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType"} // 1:1 "PMC","CExplorer", CUR...  TO-DO list Azure, Google
+	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
 	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId"}
 	ResourceCost  = []string{"Resource Cost"}
 	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost"}

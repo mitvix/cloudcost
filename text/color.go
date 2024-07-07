@@ -22,7 +22,6 @@ func stylize(startCode, in string) string {
 	if global.UseColor && runtime.GOOS != "windows" {
 		return startCode + in + ResetCode
 	}
-
 	return in
 }
 
