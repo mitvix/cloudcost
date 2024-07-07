@@ -37,7 +37,7 @@ const (
 	Codename string = "codename Stallman"
 	Aws_cexp string = "AWS Cost Explorer"
 	Aws_cur  string = "AWS Cost Usage Report"
-	Cmp      string = "Cmp"
+	Cmp      string = "Custom"
 	Azure    string = "Microsoft Azure"
 	Google   string = "Google GCP"
 
