@@ -651,7 +651,7 @@ func main() {
 	case *feeCost > 0:
 		// define fee from flag
 		fee_value = *feeCost
-	case platform != global.Pmc:
+	case platform != global.Cmp:
 		// define default fee from global (1)
 		fee_value = global.DefaultFee
 	case mpusdtotal > 0:
@@ -669,7 +669,7 @@ func main() {
 	switch {
 	case *feeMplc > 0:
 		feemp_usd = *feeMplc
-	case platform != global.Pmc:
+	case platform != global.Cmp:
 		feemp_usd = global.DefaultFee
 	default:
 		mpbrl := mpusdtotal * ptax_flt
@@ -824,11 +824,11 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 		case slices.Contains(global.UsageType, k):
 			fp.pos_usagtype = v // usagetype position
 		case slices.Contains(global.ResourceCost, k):
-			if *cloudcsv == global.Pmc {
+			if *cloudcsv == global.Cmp {
 				fp.pos_costusd = v // cost usd position
 			}
 		case slices.Contains(global.FinalCost, k):
-			if *cloudcsv != global.Pmc {
+			if *cloudcsv != global.Cmp {
 				fp.pos_costusd = v // cost usd position
 			}
 			fp.pos_costbrl = v // cost brl position
@@ -990,8 +990,8 @@ func cloudFound(filename *string, runecsv *rune) (*string, *map[string]int) {
 			cloud = global.Azure
 		case slices.Contains(r, global.Src_gcp):
 			cloud = global.Google
-		case slices.Contains(r, global.Src_pmc):
-			cloud = global.Pmc
+		case slices.Contains(r, global.Src_Cmp):
+			cloud = global.Cmp
 		default:
 			fmt.Println(global.Msg_fileform)
 		}
