@@ -60,9 +60,11 @@ export GOOS=windows
 go build -o cloudcost.exe main.go
 ```
 
-Opcional (copy to bin path)
+Opcional (Linux)
 ```
-sudo cp cloudcost /usr/local/bin
+tar zxvf cloudcost-amd64-linux.tar.gz
+chmod +x cloudcost-amd64-linux
+sudo mv cloudcost-amd64-linux /usr/local/bin/cloudcost
 ```
 
 ## Uso
