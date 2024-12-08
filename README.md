@@ -1,7 +1,7 @@
 # Cloudcost
 [![Go Reference](https://pkg.go.dev/badge/mitvix/cloudcost.svg)](https://pkg.go.dev/mitvix/cloudcost)
 
-Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google e etc.
+Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google, Oracle OCI e etc.
 
 ## Overview
 
