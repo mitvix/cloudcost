@@ -26,6 +26,8 @@ import (
 	"time"
 )
 
+var version string = "v0.1.0-2025-09-29102714-1231cb26b95111ccdf4e609ce428a8ba"
+
 // store billing data
 type Billing struct {
 	company  []string
@@ -151,17 +153,22 @@ func main() {
 		mpusdtotal,
 		credtotal,
 		supptotal,
+		suppusdtotal,
 		usage,
-		savitotal float64
+		usageusd,
+		savitotal,
+		extdtotal float64
 	)
 
 	// market place resource sum
 	var total_brl, total_usage, feemp_usd, fee_value, ptax_flt float64 // total usage + fee values
 	var sumusd, sumbrl, checksum float64                               // main sum values + checksum
 
+	// for auth search purposes
 	var savings bool
+	var extended bool
 
-	// columns tabwriter.(TabIndent|StripEscape|AlignRight|DiscardEmptyColumns|Debug)
+	// columns tabwriter.(TabIndent|*StripEscape|AlignRight|DiscardEmptyColumns|Debug)
 	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', tabwriter.StripEscape)
 
 	// main maps
@@ -174,6 +181,7 @@ func main() {
 	rsceUsdIdent := make(map[string]float64)
 	accountBrlTotal := make(map[string]float64)
 	accountUsdTotal := make(map[string]float64)
+	extendedBrlTotal := make(map[string]float64)
 
 	// set arguments using package flag
 	dirFlag := flag.String(global.Flagdirpath, "", global.Msg_flagdir)
@@ -194,7 +202,7 @@ func main() {
 	feeMplc := flag.Float64(global.Flagfeemp, 0, global.Msg_flfeemp)
 
 	// TO-DO
-	// ptxCost := flag.Float64(global.Flagptax, 0, global.Msg_flagptx)
+	ptxCost := flag.Float64(global.Flagptax, 0, global.Msg_flagptx)
 	// ptxMplc := flag.Float64(global.Flagptaxmp, 0, global.Msg_flptxmp)
 
 	flag.Parse()
@@ -210,7 +218,7 @@ func main() {
 
 	// show version
 	if *verFlag {
-		fmt.Printf("%v %v %v\n%v %v\n", global.Program, global.Version, global.Codename, global.License, goversion)
+		fmt.Printf("%v %v %v\n%v %v\n", global.Program, version, global.Codename, global.License, goversion)
 		os.Exit(0)
 	}
 
@@ -326,9 +334,9 @@ func main() {
 
 	// TO-DO
 	// set flag ptax
-	// if *ptxCost != 0 {
-	// 	args[global.Flagptax] = fmt.Sprintf("%.4f", *ptxCost)
-	// }
+	if *ptxCost != 0 {
+		args[global.Flagptax] = fmt.Sprintf("%.4f", *ptxCost)
+	}
 	// // set flag ptax market place
 	// if *ptxMplc != 0 {
 	// 	args[global.Flagptaxmp] = fmt.Sprintf("%.4f", *ptxMplc)
@@ -412,6 +420,7 @@ func main() {
 		var ptaxvalue []string
 
 		wg.Add(1)
+
 		go GetPtax(&dt_finish, global.SymbolUSD, chp, &wg)
 		cotacao = <-chp
 
@@ -431,6 +440,12 @@ func main() {
 
 			// convert ptax string to float64
 			ptax_flt, _ = strconv.ParseFloat(ptax_valdate[:6], 64)
+
+			// CHANGE FIX: Use ptax from argument
+			if *ptxCost != 0 {
+				ptax_flt = *ptxCost
+				ptax_valdate = fmt.Sprintf("%.4f", ptax_flt)
+			}
 
 			// try to emulate fee brl
 			total_usage = ptax_flt * sumusd // multiply ptax times usd total
@@ -490,18 +505,18 @@ func main() {
 
 	// prints account
 	fmt.Printf("%v\n\n", global.Msg_accout)
-	fmt.Fprintf(w, global.Account_Header)
+	fmt.Fprintf(w, "%v", global.Account_Header)
 	for key, value := range accountBrlTotal {
 		if repcloud == global.RepAzure {
 			value = value / ptax_flt
 		}
 		vtotal := accountUsdTotal[key] // get usd value for each account
-		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", key, global.Msg_SymblUS, value, cursymbol, vtotal)
+		fmt.Fprintf(w, "\t%v\t\t%v %.4f\t\t%v %.4f\t\n", key, global.Msg_SymblUS, value, cursymbol, vtotal)
 	}
 	w.Flush()
 
 	fmt.Printf("\n%v\n\n", global.Msg_produt)
-	fmt.Fprintf(w, global.Product_Header)
+	fmt.Fprintf(w, "%v", global.Product_Header)
 
 	// prints products with max char control
 	for pkey, value := range prodBrlTotal {
@@ -515,6 +530,7 @@ func main() {
 		if repcloud == global.RepAzure {
 			vtotal = vtotal / ptax_flt
 		}
+		// print product name, usd and brl costs
 		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", pkey, global.Msg_SymblUS, vtotal, cursymbol, value)
 
 		checksum += value
@@ -528,6 +544,7 @@ func main() {
 		// get support total from product name
 		for _, sprefix := range global.Support {
 			if strings.Contains(pkey, sprefix) {
+				suppusdtotal += vtotal
 				supptotal += value
 				suppname = pkey
 			}
@@ -536,6 +553,8 @@ func main() {
 
 	w.Flush()
 
+	var mpbrlcheck float64
+	var mpusdcheck float64
 	// run UsageType slice to get total foreach resource
 	for key, value := range rsceBrlTotal {
 
@@ -553,6 +572,7 @@ func main() {
 		}
 		// add market place from blank value
 		mpbrltotal += mpblankvalue
+		mpbrlcheck = mpbrltotal
 	}
 
 	// get market place total from usage type (USD)
@@ -567,6 +587,18 @@ func main() {
 			}
 		}
 		mpusdtotal += mpblankvalue
+		mpusdcheck = mpusdtotal
+	}
+
+	// looks for Extended Support
+	for key, value := range rsceBrlTotal {
+		for _, sprefix := range global.ExtendedSupp {
+			if strings.Contains(key, sprefix) {
+				extendedBrlTotal[key] = value
+				extdtotal += value
+				extended = true
+			}
+		}
 	}
 
 	// looks for Savings Plans
@@ -629,22 +661,15 @@ func main() {
 		}
 	}
 
-	// summarize total usage
-	usage = sumbrl - mpbrltotal - supptotal
-
-	// TO-DO
-	// control ptax custom values
-	// if *ptxCost > 0 {
-	// 	ptax_flt = *ptxCost
-	// 	ptax_valdate = fmt.Sprintf("%.4f", ptax_flt)
-	// 	total_usage = ptax_flt * sumusd
-	// }
-
 	// validate connection
 	if cotacao.Offline {
 		msg_conn = global.Msg_connoff
 		mpusdtotal = mpbrltotal // traversal
 	}
+
+	// summarize total usage
+	usage = sumbrl - mpbrltotal - supptotal
+	usageusd = sumusd - mpusdtotal - suppusdtotal
 
 	// control fee custom values
 	switch {
@@ -656,10 +681,13 @@ func main() {
 		fee_value = global.DefaultFee
 	case mpusdtotal > 0:
 		// reverse enginneer when fee marketplace != fee usage
-		total_us := sumusd - mpusdtotal  // sum total usd - mp total us
-		total_br := total_us * ptax_flt  // total us * ptax
-		total_wmp := sumbrl - mpbrltotal // sum total brl - mp total br
-		fee_value = total_wmp / total_br // total wp / total br
+		// Change FIX 20250928
+		if *ptxCost != 0 {
+			ptax_flt = *ptxCost
+		}
+
+		fee_value = usage / usageusd / ptax_flt
+
 	default:
 		// define fee value from report
 		fee_value = (sumbrl / total_usage)
@@ -672,8 +700,14 @@ func main() {
 	case platform != global.Cmp:
 		feemp_usd = global.DefaultFee
 	default:
-		mpbrl := mpusdtotal * ptax_flt
-		feemp_usd = mpbrltotal / mpbrl
+		if *feeCost != 0 && *feeMplc != 0 {
+			feemp_usd = *feeMplc
+		} else if *feeCost != 0 && *feeMplc == 0 {
+			feemp_usd = *feeCost
+		} else {
+			mpbrl := mpusdtotal * ptax_flt
+			feemp_usd = mpbrltotal / mpbrl
+		}
 	}
 
 	// miau - treat marketplace total cost
@@ -723,7 +757,7 @@ func main() {
 	if credtotal != 0 && credtotal == float64(credtotal) {
 		// FIX-ME I need be itereted not only once!!!
 		fmt.Printf("\n%v\n\n", global.Msg_credit)
-		fmt.Fprintf(w, "\t%v\n", global.Detail_Header)
+		fmt.Fprintf(w, "\t%v\n", global.Desc_Header)
 		fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, credtotal, cred_name)
 
 	}
@@ -733,17 +767,29 @@ func main() {
 	if supptotal != 0 && supptotal == (supptotal) {
 		fmt.Printf("\n%v\n\n", global.Msg_support)
 		fmt.Fprintf(w, "\t%v\n", global.Detail_Header)
-		fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, supptotal, suppname)
+		//fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, supptotal, suppname)
+		fmt.Fprintf(w, "\t%v %.2f\t%v %.2f\t%v\n", global.Msg_SymblUS, suppusdtotal, cursymbol, supptotal, suppname)
 	}
+	w.Flush()
+
+	// SHOW EXTENDED SUPPORT
+	if extended {
+		fmt.Printf("\n%v\n\n", global.Msg_extended)
+		fmt.Fprintf(w, "\t%v\n", global.Desc_Header)
+		for key, value := range extendedBrlTotal {
+			fmt.Fprintf(w, "\t%v %.2f\t%s\n", cursymbol, value, key)
+		}
+		fmt.Fprintf(w, "\n\t%v\t%v %.2f\n", global.Total_Extended, cursymbol, extdtotal)
+	}
+
 	w.Flush()
 
 	// SHOW SAVINGS
 	if savings {
 		fmt.Printf("\n%v\n\n", global.Msg_savings)
-		fmt.Fprintf(w, "\t%v\n", global.Detail_Header)
+		fmt.Fprintf(w, "\t%v\n", global.Desc_Header)
 		fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, savitotal, saviname)
 	}
-
 	w.Flush()
 
 	// SHOW TOTAL
@@ -753,6 +799,7 @@ func main() {
 
 	// prepare custom values
 	if slices.Contains(currency, global.SymbolUSD) {
+		// Include USD only values (ex. CUR)
 		if *feeCost > 0 {
 			total_brl = (sumusd * ptax_flt) * (*feeCost)
 			fee_msg = global.Msg_without // msg with fee added
@@ -761,28 +808,71 @@ func main() {
 			fee_msg = global.Msg_withfee // msg without fee
 		}
 	} else {
-		if *feeCost > 0 {
-			total_brl = (sumusd * ptax_flt) * (*feeCost)
+		// Includes BRL values (ex. custom, azure, gcp)
+		if *feeCost > 0 || *ptxCost > 0 {
+			// Change FIX-20250928-1: alter total_brl to sum instead plus
+
+			var feemp_value float64
+
+			if *feeCost != 0 {
+				fee_value = *feeCost
+			}
+			if *ptxCost == 0 {
+				*ptxCost = ptax_flt
+			}
+
+			if *feeMplc != 0 {
+				feemp_value = *feeMplc
+			} else {
+				feemp_value = fee_value
+			}
+
+			usagebrl := (usageusd * *ptxCost) * (fee_value)
+			mktplace := (mpusdtotal * *ptxCost) * (feemp_value)
+			support := (suppusdtotal * *ptxCost) * (fee_value)
+			total_brl = utils.CalculateTotalf(usagebrl, mktplace, support)
+
 			fee_msg = global.Msg_without // msg with fee added
 		} else {
 			total_brl = sumbrl
 		}
 	}
 
-	// show total values
+	// Show total values
 	fmt.Fprintf(w, "\n\t%v\n", global.Total_Header)
-	fmt.Fprintf(w, "\t%v %.2f\t\t%v %.2f\n", global.Msg_SymblUS, sumusd, global.Msg_SymblBR, total_brl)
+	fmt.Fprintf(w, "\t%v %.2f\t\t%v %.2f\t\n", global.Msg_SymblUS, sumusd, global.Msg_SymblBR, total_brl)
 
 	w.Flush()
 
 	// show validation checksum & connectivity
 	str1 := fmt.Sprintf("%.2f", checksum)
 	str2 := fmt.Sprintf("%.2f", sumbrl)
+	var str3 string
+
+	// Check Marketplace billing
+	// TO FIX: Auto fee calculation can create FP (False Positive)
+	if mpusdcheck > 0 {
+		var fee, ptx, mpvalue float64
+
+		if *feeMplc != 0 {
+			fee = *feeMplc
+			ptx = *ptxCost
+		} else {
+			fee = feemp_usd
+			ptx = ptax_flt
+		}
+		mpvalue = (mpusdtotal * fee) * ptx
+
+		// check if float results from market place USD and Billed are equal
+		if !utils.AreEqual(mpvalue, mpbrlcheck) {
+			str3 = fmt.Sprintf("%v R$%f x R$%f\n", global.Msg_Mperrbil, mpvalue, mpbrlcheck)
+		}
+	}
 
 	if str1 == str2 {
-		fmt.Printf("\n%v %v\t%v\t%v\n\n", global.Msg_valid, text.Green(global.Msg_ok), msg_conn, text.Magenta(fee_msg))
+		fmt.Printf("\n%v %v\t%v\t%v\t%v\n\n", global.Msg_valid, text.Green(global.Msg_ok), msg_conn, text.Magenta(fee_msg), text.Red(str3))
 	} else {
-		fmt.Printf("\n%v %v %v\t%v\t%v\n", global.Msg_valid, text.Red(global.Msg_error), text.Red(global.Msg_vdiff), msg_conn, text.Magenta(fee_msg))
+		fmt.Printf("\n%v %v %v\t%v\t%v\t%v\n", global.Msg_valid, text.Red(global.Msg_error), text.Red(global.Msg_vdiff), msg_conn, text.Magenta(fee_msg), text.Red(str3))
 		fmt.Printf("%v (%v) != %v (%v)\n", global.Msg_sumtotal, str1, global.Msg_sumprodt, str2)
 	}
 	// Aguardar todas as goroutines terminarem
@@ -992,6 +1082,8 @@ func cloudFound(filename *string, runecsv *rune) (*string, *map[string]int) {
 			cloud = global.Google
 		case slices.Contains(r, global.Src_Cmp):
 			cloud = global.Cmp
+		case slices.Contains(r, global.Src_oci):
+			cloud = global.Oracle
 		default:
 			fmt.Println(global.Msg_fileform)
 		}
@@ -1016,6 +1108,12 @@ func GetPtax(dt_parse *string, symbol string, chp chan Ptax, wg *sync.WaitGroup)
 	sday := utils.SubDays(d)
 	minday := utils.ParseDatetoString(y, m, sday)
 	maxday := utils.ParseDatetoString(y, m, d)
+
+	// avoid access ptax from future (need fix weekend)
+	today := time.Now().Day()
+	if d > today {
+		d = today
+	}
 
 	url := fmt.Sprintf(global.PtaxAPIUrl, symbol, minday, maxday)
 
@@ -1050,6 +1148,15 @@ func GetPtax(dt_parse *string, symbol string, chp chan Ptax, wg *sync.WaitGroup)
 	// Ignoring error test to get cotacaoVenda and data only
 	value := cotacao["value"]
 	valueSlice := value.([]interface{})
+
+	// avoid index out of range error
+	if len(valueSlice) == 0 {
+		ptax.Offline = true
+		chp <- ptax
+		return
+	}
+
+	// access interface slice if everything is ok
 	fistElement := valueSlice[0]
 	cotacaoMap := fistElement.(map[string]interface{})
 
