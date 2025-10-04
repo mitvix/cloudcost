@@ -1,7 +1,7 @@
 # Cloudcost
 [![Go Reference](https://pkg.go.dev/badge/mitvix/cloudcost.svg)](https://pkg.go.dev/mitvix/cloudcost)
 
-Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google, Oracle OCI e etc.
+Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google, Oracle OCI e outras ferramentas.
 
 ## Overview
 
@@ -78,16 +78,18 @@ cloudcost --help
 Argumentos:
 
 * -path, --path `Diretório com arquivos CSV ou arquivo .csv`
-* -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
-* -account, --account `Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)`
 * -fee, --fee `Define fator de consumo padrão ex: --fee 1.09 (requer --path)`
 * -feemp, --feemp `Define fator de consumo Market Place ex: --feemp 1.7550 (requer --path)`
+* -ptax, --ptax `Define o Dólar (PTAX) de consumo padrão (requer --path)`
 * -marketplace, --marketplace `Mostra os detalhes de recursos do Market Place`
+* -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
+* -account, --account `Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)`
+* -usagetype, --usagetype `Mostra detalhes do tipo do recurso (UsageType)`
 * -resourcegroup, --resourcegroup `Mostra custos por Resource Group em relatórios Microsoft Azure`
 * -memlimit, --memlimit `Define max memory MB em uso - tenta controlar GC e pode gerar lentidão`
 * -resourceid, --resourceid `Mostra detalhes de recursos por ID/arn (ResourceID)`
 * -search, --search `Faz busca nos relatórios min. 2 caracteres`
-* -usagetype, --usagetype `Mostra detalhes do tipo do recurso (UsageType)`
+* -nopipe, --nopipe `Desativa a pausa na visualização e formatações de texto no terminal`
 * -version, --version `Mostra informações sobre a versão e sai`
 
 
@@ -109,6 +111,7 @@ Outras saídas
 * Resource Id
 * Usage Type
 * Market Place
+* Extended Support
 * Savings
 * Credits
 * Support
