@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"reflect"
 	"runtime"
@@ -226,7 +227,7 @@ func sizeof(rv reflect.Value) (int, int) {
 func ShowPipeData(dataus, databr map[string]float64, symbl *string, lines int, w *tabwriter.Writer, label string) {
 	fmt.Printf("\n%v\n\n", text.Bold(label))
 	if len(databr) < lines || !global.ShowPipe {
-		fmt.Fprintf(w, global.Product_vHeader)
+		fmt.Fprintf(w, "%v", global.Product_vHeader)
 
 		for key, value := range databr {
 			fmt.Fprintf(w, "\t%v %.2f\t\t%v %.2f\t\t%v\n", global.Msg_SymblUS, dataus[key], *symbl, value, key)
@@ -283,4 +284,45 @@ func ShowExamples(cmdarg *string) {
 		fmt.Printf("\n\t%v %v", *cmdarg, example)
 	}
 	fmt.Printf("\n\n%v\n%v\n\n", global.Msg_endex, global.Msg_github)
+}
+
+// Function to calculate valid float numbers only
+func CalculateTotalf(values ...float64) float64 {
+	var total float64
+	for _, val := range values {
+		if math.IsNaN(val) {
+			continue
+		}
+		total += val
+	}
+	return total
+}
+
+// AreEqualRelative checks if two float64 numbers are approximately equal
+// using a relative tolerance.
+func AreEqual(a, b float64) bool {
+	RelativeEpsilon := 1e-9
+	// 1. Absolute Epsilon check for numbers close to zero
+	// We still need a small absolute check for tiny numbers to avoid issues
+	// when the relative tolerance becomes meaningless.
+	const AbsoluteEpsilon = 1e-12
+
+	// First, check for exact equality (handles NaN, Inf, and exact matches quickly)
+	if a == b {
+		return true
+	}
+
+	// Calculate the difference and the magnitude of the larger number
+	diff := math.Abs(a - b)
+
+	// Handle numbers close to zero using the Absolute Epsilon
+	if math.Abs(a) < AbsoluteEpsilon || math.Abs(b) < AbsoluteEpsilon {
+		return diff < AbsoluteEpsilon
+	}
+
+	// 2. Relative Epsilon check for numbers with larger magnitudes
+	// Compare the difference to a fraction (RelativeEpsilon) of the larger magnitude.
+	largestMagnitude := math.Max(math.Abs(a), math.Abs(b))
+
+	return diff/largestMagnitude < RelativeEpsilon
 }
