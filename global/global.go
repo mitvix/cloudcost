@@ -32,13 +32,13 @@ const InnerBar string = "[ ....................................... ]" // 39 posi
 
 // Main Strings and Values
 const (
-	Version  string = "0.0.23"
 	Program  string = "Cloud Cost Report Reader"
-	Codename string = "codename Stallman"
+	Codename string = "codename Supermouse"
 	Aws_cexp string = "AWS Cost Explorer"
 	Aws_cur  string = "AWS Cost Usage Report"
 	Cmp      string = "Custom"
 	Azure    string = "Microsoft Azure"
+	Oracle   string = "Oracle OCI"
 	Google   string = "Google GCP"
 
 	// define report cloud
@@ -54,6 +54,7 @@ const (
 	Src_cur  string = "lineItem/UsageAccountId"
 	Src_azur string = "SubscriptionId"
 	Src_gcp  string = "billing_account_id"
+	Src_oci  string = "oci_AttributedCost"
 
 	Progdesc    string = "Busca padrões em arquivos de relatórios Multicloud e filtra dados de billing"
 	License     string = "\nLicença GPLv3+: GNU GPL versão 3 ou superior <https://gnu.org/licenses/gpl.html>.\nEste é um software livre: você é livre para alterá-lo e redistribuí-lo.\nNÃO HÁ GARANTIAS, na máxima extensão permitida por lei. \n\nEscrito por Alexander Manfrin <mitvix@hotmail.com> em"
@@ -100,7 +101,7 @@ const (
 	Msg_rsrctype   string = "Usage type:"
 	Msg_resrcid    string = "Resource IDs:"
 	Msg_resrgrp    string = "Resource Group:"
-	Msg_total      string = "Total:"
+	Msg_total      string = "Total Geral:"
 	Msg_usage      string = "Consumo:"
 	Msg_ptaxglb    string = "Ptax:"
 	Msg_mktpl      string = "Market Place:"
@@ -108,11 +109,13 @@ const (
 	Msg_credit     string = "Créditos:"
 	Msg_support    string = "Suporte:"
 	Msg_savings    string = "Savings:"
+	Msg_extended   string = "Extended Support:"
 	Msg_feerr      string = "-"
 	Msg_valid      string = "Validação do cálculo"
 	Msg_ok         string = "[OK]"
 	Msg_error      string = "ERRO!"
 	Msg_vdiff      string = "Valores diferentes!"
+	Msg_Mperrbil   string = "Atenção! Diferença no MarketPlace"
 	Msg_fileopen   string = "Erro ao abrir o arquivo"
 	Msg_fileread   string = "Erro ao ler linha do arquivo "
 	Msg_fileerro   string = "Arquivo ou diretório não encontrado"
@@ -151,30 +154,30 @@ var (
 
 var (
 	Msg_withfee string = "Conversão dolar s/ fator"
-	Msg_without string = "Fator adicionado"
+	Msg_without string = "Fator adicionado manualmente"
 )
 
 // Field prefix to search for usages  (BE CAREFUL!!!)
 var (
-	Marketplace []string = []string{"MP:", "SoftwareUsage", "Marketplace"} // strings to search marketplace
-	Credits     []string = []string{"Credit"}                              // strings to search credits
-	Support     []string = []string{"AWS Support (Enterprise)"}            // strings to search support
-	Savings     []string = []string{"Savings"}                             // strings to search Savings
-
+	Marketplace  []string = []string{"MP:", "SoftwareUsage", "Marketplace"} // strings to search marketplace
+	Credits      []string = []string{"Credit"}                              // strings to search credits
+	Support      []string = []string{"AWS Support (Enterprise)"}            // strings to search support
+	Savings      []string = []string{"Savings"}                             // strings to search Savings
+	ExtendedSupp []string = []string{"ExtendedSupport"}                     //  string to search Extended Support
 )
 
-// Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer)
+// Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer, OCI)
 var (
-	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate"}
-	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate"}
-	CompanyName   = []string{"Company Name", "bill/InvoicingEntity", "PayerAccountName"}
-	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName"}
-	ProductName   = []string{"Product Name", "product/ProductName", "ProductName"}
-	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
-	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId"}
-	ResourceCost  = []string{"Resource Cost"}
-	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost"}
-	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode"}
+	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate", "BillingPeriodStart"}
+	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate", "BillingPeriodEnd"}
+	CompanyName   = []string{"Company Name", "bill/InvoicingEntity", "PayerAccountName", "SubAccountName"}
+	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName", "BillingAccountId"}
+	ProductName   = []string{"Product Name", "product/ProductName", "ProductName", "ChargeDescription"}
+	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType", "ServiceCategory"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
+	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId", "ResourceId"}
+	ResourceCost  = []string{"Resource Cost", "oci_UnitPriceOverage"}
+	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"} // oci_Att* EffectiveCost = oci
+	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode", "BillingCurrency"}
 	ReportCloud   = []string{"aws", "azure", "google", "huawei", "oci"}
 )
 
@@ -192,12 +195,14 @@ var (
 
 var (
 	MarketP_Header  string = "PTAX\t\tFATOR\t\tMP USD\t\tMP BRL"
-	Account_Header  string = "\tCONTA\tUSD\t\tBRL\t\n"
+	Account_Header  string = "\tCONTA\t\tUSD\t\tBRL\t\n"
 	Product_Header  string = "\tRECURSO\tUSD\t\tBRL\t\n"
 	Product_vHeader string = "\tUSD\t\tBRL\t\tRECURSO\n"
 	Resource_Header string = "INÍCIO\t\tFIM\t\tPTAX\t\tFATOR\t\tCONSUMO USD\t\tCONSUMO BRL"
-	Detail_Header   string = "TOTAL\tTIPO"
-	Total_Header    string = "TOTAL USD\t\tTOTAL BRL"
+	Detail_Header   string = "USD\tBRL\tDESC"
+	Desc_Header     string = "BRL\tDESC"
+	Total_Extended  string = "TOTAL EXTENDED SUPPORT:"
+	Total_Header    string = "USD\t\tBRL"
 )
 
 // leave the last line empty
