@@ -15,7 +15,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"slices"
@@ -25,8 +24,6 @@ import (
 	"text/tabwriter"
 	"time"
 )
-
-var version string = "v0.1.0-2025-09-29102714-1231cb26b95111ccdf4e609ce428a8ba"
 
 // store billing data
 type Billing struct {
@@ -55,6 +52,7 @@ type Fields struct {
 	pos_costbrl  int
 	pos_currency int
 	pos_resident int
+	pos_restype  int
 	pos_repcloud int
 }
 
@@ -88,16 +86,61 @@ type RsceIdent struct {
 	cost_brl float64
 }
 
+type RsceType struct {
+	resource string
+	cost_usd float64
+	cost_brl float64
+}
+
 var accountCount []AccountCount
 var prodCount []ProdCount
 var rsceCount []RsceCount
 var rsceIdent []RsceIdent
+var rsceType []RsceType
 
 var index int64 // count total future usage
 
 var Construct = map[string]map[string]int{}
 
 var barchar = global.Barchar
+
+// slices variables
+var (
+	sdate,
+	fdate,
+	company,
+	accounts,
+	products,
+	cred_name,
+	currency []string
+)
+
+// strings variables
+var (
+	path,
+	suppname,
+	saviname,
+	msg_conn,
+	date_str,
+	date_end,
+	fee_sval,
+	fee_msg,
+	cursymbol,
+	ptax_valdate string
+)
+
+// mathematic variables
+var (
+	mpbrltotal,
+	mpusdtotal,
+	credtotal,
+	supptotal,
+	suppusdtotal,
+	usage,
+	usageusd,
+	savitotal,
+	extdtotal float64
+)
 
 func main() {
 	// resource management
@@ -112,6 +155,8 @@ func main() {
 	var platform, repcloud string
 	args := map[string]string{}
 	goversion := runtime.Version()
+	version := global.Version
+
 	timeststart := time.Now()
 
 	billing := Billing{} // initiate billing struct
@@ -121,44 +166,6 @@ func main() {
 	ch := make(chan Billing) // define main channel
 	chp := make(chan Ptax)   // define ptax channel
 	var wg sync.WaitGroup    // create concurrency waitgroup
-
-	// slices variables
-	var (
-		sdate,
-		fdate,
-		company,
-		accounts,
-		products,
-		cred_name,
-		currency []string
-	)
-
-	// strings variables
-	var (
-		path,
-		suppname,
-		saviname,
-		msg_conn,
-		date_str,
-		date_end,
-		fee_sval,
-		fee_msg,
-		cursymbol,
-		ptax_valdate string
-	)
-
-	// mathematic variables
-	var (
-		mpbrltotal,
-		mpusdtotal,
-		credtotal,
-		supptotal,
-		suppusdtotal,
-		usage,
-		usageusd,
-		savitotal,
-		extdtotal float64
-	)
 
 	// market place resource sum
 	var total_brl, total_usage, feemp_usd, fee_value, ptax_flt float64 // total usage + fee values
@@ -179,6 +186,8 @@ func main() {
 	mkplBrlTotal := make(map[string]float64)
 	rsceBrlIdent := make(map[string]float64)
 	rsceUsdIdent := make(map[string]float64)
+	rsceBrlType := make(map[string]float64)
+	rsceUsdType := make(map[string]float64)
 	accountBrlTotal := make(map[string]float64)
 	accountUsdTotal := make(map[string]float64)
 	extendedBrlTotal := make(map[string]float64)
@@ -192,6 +201,7 @@ func main() {
 	csvFlag := flag.Bool(global.Flagsheader, false, global.Msg_flaghed)
 	rscFlag := flag.Bool(global.Flagusgtype, false, global.Msg_flagrsc)
 	rscIdet := flag.Bool(global.Flagresrcid, false, global.Msg_flagrid)
+	rscType := flag.Bool(global.Flagresrtype, false, global.Msg_flagrtype)
 	rscMkpl := flag.Bool(global.Flagmarkplc, false, global.Msg_flagmkl)
 	nosPipe := flag.Bool(global.Flagnopipe, false, global.Msg_nopipe)
 	rscGrop := flag.Bool(global.Flagresrcgr, false, global.Msg_flagrsg)
@@ -224,6 +234,7 @@ func main() {
 
 	// create valid path
 	if len(*dirFlag) > 0 {
+		// check flag with --path
 		path = *dirFlag
 		err := utils.FileExists(&path)
 
@@ -232,11 +243,13 @@ func main() {
 			os.Exit(0)
 		}
 
-		if !strings.Contains(path, global.Msg_extcsv) {
-			path = *dirFlag + "/*" + global.Msg_extcsv
+		// Looking for individual file *.gz
+		if strings.HasSuffix(path, ".gz") {
+			path = *dirFlag
 		}
 
 	} else if len(os.Args) > 1 {
+		// check first argument without --path
 		path = os.Args[1]
 		err := utils.FileExists(&os.Args[1])
 
@@ -244,9 +257,9 @@ func main() {
 			fmt.Println(global.Msg_fileerro)
 			os.Exit(0)
 		}
-
-		if !strings.Contains(os.Args[1], global.Msg_extcsv) {
-			path = os.Args[1] + "/*.csv"
+		// Looking for individual file *.gz
+		if strings.HasSuffix(path, ".gz") {
+			path = os.Args[1]
 		}
 	}
 
@@ -255,8 +268,8 @@ func main() {
 		path = strings.Replace(path, "//", "/", 1)
 	}
 
-	// treat path case insensitive
-	files, err := filepath.Glob(utils.CaseInsensitive(&path))
+	// Find (csv/gz) files recursively BE CAREFUL!
+	files, err := utils.FindFiles(path)
 
 	// show usage program if path is wrong
 	if err != nil || files == nil {
@@ -312,6 +325,11 @@ func main() {
 		args[global.Flagresrcid] = "true"
 	}
 
+	// show flag by resource type
+	if utils.SlicesContainArg(*rscType, &os.Args, global.Flagresrtype) {
+		args[global.Flagresrtype] = "true"
+	}
+
 	// show flag by market place
 	if utils.SlicesContainArg(*rscMkpl, &os.Args, global.Flagmarkplc) {
 		args[global.Flagmarkplc] = "true"
@@ -359,6 +377,22 @@ func main() {
 		if global.Max_limitfiles > 0 && i >= global.Max_limitfiles {
 			defer fmt.Printf("%v (%v)\n", global.Msg_maxreached, global.Max_limitfiles)
 			break
+		}
+
+		// Working with .gz files
+		if strings.HasSuffix(filename, ".gz") {
+			// uncompress .gz for each file founded
+			tempPath, err := utils.GunzipToTemp(filename)
+			if err != nil {
+				fmt.Printf("Erro ao descompactar %s: %v\n", filename, err)
+				continue
+			}
+
+			// Remove temp file in the end
+			defer os.Remove(tempPath)
+
+			// Set filename with temp file gunzipped
+			filename = tempPath
 		}
 
 		// identify default rune (delimiter) from csv
@@ -499,6 +533,11 @@ func main() {
 		rsceUsdIdent[rsceIdent[k].resource] += value.cost_usd
 		rsceBrlIdent[rsceIdent[k].resource] += value.cost_brl
 	}
+	// load resource type values into map
+	for k, value := range rsceType {
+		rsceUsdType[rsceType[k].resource] += value.cost_usd
+		rsceBrlType[rsceType[k].resource] += value.cost_brl
+	}
 
 	// prints platform
 	fmt.Fprintf(w, "%v\t%v-%v\t\n\n", global.Msg_source, platform, repcloud)
@@ -624,6 +663,10 @@ func main() {
 	// SHOW RESOURCEID with pipe control using io.Pipe()
 	if args[global.Flagresrcid] == "true" {
 		utils.ShowPipeData(rsceUsdIdent, rsceBrlIdent, &cursymbol, global.PipeLine, w, global.Msg_resrcid)
+	}
+
+	if args[global.Flagresrtype] == "true" {
+		utils.ShowPipeData(rsceUsdType, rsceBrlType, &cursymbol, global.PipeLine, w, global.Msg_resrtype)
 	}
 
 	if *rscGrop {
@@ -808,6 +851,7 @@ func main() {
 			fee_msg = global.Msg_withfee // msg without fee
 		}
 	} else {
+
 		// Includes BRL values (ex. custom, azure, gcp)
 		if *feeCost > 0 || *ptxCost > 0 {
 			// Change FIX-20250928-1: alter total_brl to sum instead plus
@@ -928,6 +972,8 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 			fp.pos_currency = v // currency position
 		case slices.Contains(global.ResourceIdent, k):
 			fp.pos_resident = v // resource id position
+		case slices.Contains(global.ResourceType, k):
+			fp.pos_restype = v // resource id position
 		}
 
 	}
@@ -1012,6 +1058,7 @@ func appendData(data *Billing, rln []string, cloudcsv *string, fp Fields) *Billi
 	prodCount = append(prodCount, ProdCount{rln[fp.pos_products], fusd, fbrl})
 	rsceCount = append(rsceCount, RsceCount{rln[fp.pos_usagtype], fusd, fbrl})
 	rsceIdent = append(rsceIdent, RsceIdent{rln[fp.pos_resident], fusd, fbrl})
+	rsceType = append(rsceType, RsceType{rln[fp.pos_restype], fusd, fbrl})
 	accountCount = append(accountCount, AccountCount{rln[fp.pos_accounts], fusd, fbrl})
 
 	return data
