@@ -15,7 +15,7 @@ O objetivo desta ferramenta é permitir a análise dos dados de custos e consumo
 
 ## Cenário
 
-> O AWS Cost Usage Report pode gerar dezenas de arquivos CSV detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados em arquivos de texto. Para processar essa massa de dados e extrair informações rapidamente é necessário o uso de ferramentas de BI, muitas vezes inacessíveis ou de difícil uso. Neste cenário este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente, além de outras customizações e informações importantes.
+> O AWS Cost Usage Report ou outras nuvens podem gerar dezenas de arquivos .CSV ou .GZ detalhados do consumo de nuvem, podendo gerar (GigaBytes) de dados. Para processar essa massa de dados e extrair informações rapidamente é uma tarefa complexa e é necessário o uso de ferramentas de BI ou outras, muitas vezes inacessíveis ou de difícil uso. Neste cenário, este utilitário permite a análise de toda a massa de dados em segundos, facilitando a rápida extração das informações mais importantes como custos dos produtos, uso de recursos, total por conta, resource ID, usage type, PTAX, fator de cobrança quando existente, além de outras customizações e informações importantes para o faturamento e análise de custos.
 
 
 </details>
@@ -37,7 +37,7 @@ Dentre os principais projetos escritos em Go, temos Kubernetes, kubectl, Minikub
 
 ### Por que Go ?
 
-_"Seria em Rust, mas a partir do capítulo 5 Rust se tornou complexo demais"_
+_"Seria em Rust, mas a partir do capítulo 5 Rust se tornou complexo demais com a história do borrow checker e ownership"_
 
 O objetivo foi de focar esforços no aprendizado de uma línguagem moderna para pequenos projetos paralelos, em Go foi possível encontrar uma curva de aprendizado curta, pois sua semântica segue padrões já conhecidos de outras línguagens como C, mas sem as dores do uso de uma línguagem nosafe. Aliado a capacidade de criar códigos usando concorrência e paralelismo de forma rápida e simples, Go demonstrou ser a opção mais adequada para o objetivo de percorrer gigabytes de arquivos em busca de padrões para extrair informações de forma rápida e precisa sem a necessidade de concluir um doutorado para isso.
 
