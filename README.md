@@ -155,6 +155,7 @@ Tempo médio de processamento de arquivos csv
 * 11GB  (1 arquivo * 11GB)   em 1m14s (13.438.628 linhas) w/ GC control
 * 424MB (1 arquivo * 424MB)  em 2.14s (427.229 linhas)
 * 115MB (1 arquivo * 115MB)  em 0.56s (144.117 linhas)
+* 704,9KB compactação gz (144 arquivos, 30 subfolders) em 78ms (milisegundos)
 
 > Hardware 12 × Intel® Core™ i7-9750H CPU @ 2.60GH, 32GB Kernel 6.6.32 (64-bit);
 > GC Control: Garbage Collector limitado até 12GB default (--memlimit para alterar)
