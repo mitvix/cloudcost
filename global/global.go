@@ -30,10 +30,15 @@ const Barchar string = "\u2587" // ShowProgressBar character \u220E
 const BarcharWin string = "#"
 const InnerBar string = "[ ....................................... ]" // 39 positions!
 
+// Program and version
+const (
+	Program  string = "Cloud Cost Report Reader cCRr"
+	Codename string = "codename MightyMouse"
+	Version  string = "v0.2.1-2026-03-11090811-42f34b7149cdd2eb5947144bab436325"
+)
+
 // Main Strings and Values
 const (
-	Program  string = "Cloud Cost Report Reader"
-	Codename string = "codename Supermouse"
 	Aws_cexp string = "AWS Cost Explorer"
 	Aws_cur  string = "AWS Cost Usage Report"
 	Cmp      string = "Custom"
@@ -56,23 +61,24 @@ const (
 	Src_gcp  string = "billing_account_id"
 	Src_oci  string = "oci_AttributedCost"
 
-	Progdesc    string = "Busca padrões em arquivos de relatórios Multicloud e filtra dados de billing"
-	License     string = "\nLicença GPLv3+: GNU GPL versão 3 ou superior <https://gnu.org/licenses/gpl.html>.\nEste é um software livre: você é livre para alterá-lo e redistribuí-lo.\nNÃO HÁ GARANTIAS, na máxima extensão permitida por lei. \n\nEscrito por Alexander Manfrin <mitvix@hotmail.com> em"
-	Flagdirpath string = "path"
-	Flagaccount string = "account"
-	Flagfee     string = "fee"
-	Flagfeemp   string = "feemp"
-	Flagptax    string = "ptax"
-	Flagptaxmp  string = "ptaxmp"
-	Flagsheader string = "header"
-	Flagusgtype string = "usagetype"
-	Flagresrcid string = "resourceid"
-	Flagmarkplc string = "marketplace"
-	Flagmemlimt string = "memlimit"
-	Flagresrcgr string = "resourcegroup"
-	Flagnopipe  string = "nopipe"
-	Flagsearch  string = "search"
-	Flagversion string = "version"
+	Progdesc     string = "Busca padrões em arquivos de relatórios Multicloud e filtra dados de billing"
+	License      string = "\nLicença GPLv3+: GNU GPL versão 3 ou superior <https://gnu.org/licenses/gpl.html>.\nEste é um software livre: você é livre para alterá-lo e redistribuí-lo.\nNÃO HÁ GARANTIAS, na máxima extensão permitida por lei. \n\nEscrito por Alexander Manfrin <mitvix@hotmail.com> em"
+	Flagdirpath  string = "path"
+	Flagaccount  string = "account"
+	Flagfee      string = "fee"
+	Flagfeemp    string = "feemp"
+	Flagptax     string = "ptax"
+	Flagptaxmp   string = "ptaxmp"
+	Flagsheader  string = "header"
+	Flagusgtype  string = "usagetype"
+	Flagresrcid  string = "resourceid"
+	Flagresrtype string = "resourcetype"
+	Flagmarkplc  string = "marketplace"
+	Flagmemlimt  string = "memlimit"
+	Flagresrcgr  string = "resourcegroup"
+	Flagnopipe   string = "nopipe"
+	Flagsearch   string = "search"
+	Flagversion  string = "version"
 
 	Msg_flagdir string = "Diretório com arquivos CSV ou arquivo .csv"
 	Msg_flagacc string = "Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)"
@@ -81,16 +87,17 @@ const (
 	Msg_flagptx string = "Define PTAX de consumo padrão ex: --ptax 4.9962 (requer --path)"
 	Msg_flptxmp string = "Define PTAX de consumo Market Place ex: --ptaxmp 5.19 (requer --path)"
 
-	Msg_flagptax string = "Define PTAX padrão manualmente (requer --path)"
-	Msg_flaghed  string = "Mostra o cabeçalho do arquivo CSV (requer --path)"
-	Msg_flagrsc  string = "Mostra detalhes do tipo do recurso (UsageType)"
-	Msg_flagrsg  string = "Mostra custos por Resource Group em relatórios Microsoft Azure"
-	Msg_flagrid  string = "Mostra detalhes de recursos por ID/arn (ResourceID)"
-	Msg_flagmkl  string = "Mostra os detalhes de recursos do Market Place"
-	Msg_memlimt  string = "Define max memory MB em uso - tenta controlar GC e pode gerar lentidão"
-	Msg_nopipe   string = "Desativa a pausa na visualização e formatações de texto"
-	Msg_flagsch  string = "Faz busca nos relatórios min. 2 caracteres (requer --path)"
-	Msg_version  string = "Mostra informações sobre a versão e sai"
+	Msg_flagptax  string = "Define PTAX padrão manualmente (requer --path)"
+	Msg_flaghed   string = "Mostra o cabeçalho do arquivo CSV (requer --path)"
+	Msg_flagrsc   string = "Mostra detalhes do tipo do recurso (UsageType)"
+	Msg_flagrsg   string = "Mostra custos por Resource Group em relatórios Microsoft Azure"
+	Msg_flagrid   string = "Mostra detalhes de recursos por ID/arn (ResourceID)"
+	Msg_flagrtype string = "Mostra detalhes de recursos por tipo (Resource Type)"
+	Msg_flagmkl   string = "Mostra os detalhes de recursos do Market Place"
+	Msg_memlimt   string = "Define max memory MB em uso - tenta controlar GC e pode gerar lentidão"
+	Msg_nopipe    string = "Desativa a pausa na visualização e formatações de texto"
+	Msg_flagsch   string = "Faz busca nos relatórios min. 2 caracteres (requer --path)"
+	Msg_version   string = "Mostra informações sobre a versão e sai"
 
 	Msg_contrt     string = "Contrato:"
 	Msg_rangstr    string = "Início"
@@ -100,6 +107,7 @@ const (
 	Msg_source     string = "Billing:"
 	Msg_rsrctype   string = "Usage type:"
 	Msg_resrcid    string = "Resource IDs:"
+	Msg_resrtype   string = "Resource Type"
 	Msg_resrgrp    string = "Resource Group:"
 	Msg_total      string = "Total Geral:"
 	Msg_usage      string = "Consumo:"
@@ -166,7 +174,7 @@ var (
 	ExtendedSupp []string = []string{"ExtendedSupport"}                     //  string to search Extended Support
 )
 
-// Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer, OCI)
+// Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer, Focus/OCI)
 var (
 	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate", "BillingPeriodStart"}
 	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate", "BillingPeriodEnd"}
@@ -174,9 +182,10 @@ var (
 	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName", "BillingAccountId"}
 	ProductName   = []string{"Product Name", "product/ProductName", "ProductName", "ChargeDescription"}
 	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType", "ServiceCategory"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
+	ResourceType  = []string{"Resource Type", "ResourceType"}                                    // ResourceType Focus/OCI
 	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId", "ResourceId"}
-	ResourceCost  = []string{"Resource Cost", "oci_UnitPriceOverage"}
-	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"} // oci_Att* EffectiveCost = oci
+	ResourceCost  = []string{"Resource Cost", "EffectiveCost"} // EffectiveCost is the end price in Focus/OCI
+	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"}
 	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode", "BillingCurrency"}
 	ReportCloud   = []string{"aws", "azure", "google", "huawei", "oci"}
 )
@@ -205,4 +214,4 @@ var (
 	Total_Header    string = "USD\t\tBRL"
 )
 
-// leave the last line empty
+// EOF
