@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"cloudcost/global"
 	"cloudcost/text"
+	"compress/gzip"
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"math"
 	"os"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"slices"
@@ -325,4 +328,58 @@ func AreEqual(a, b float64) bool {
 	largestMagnitude := math.Max(math.Abs(a), math.Abs(b))
 
 	return diff/largestMagnitude < RelativeEpsilon
+}
+
+// FindFiles find files .csv and .gz recursively from path
+func FindFiles(root string) ([]string, error) {
+	var files []string
+
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Ignore directories
+		if !d.IsDir() {
+			// Convert to lowercase
+			lowerPath := strings.ToLower(path)
+
+			// Check csv or gz files and append to slice string files
+			if strings.HasSuffix(lowerPath, ".csv") || strings.HasSuffix(lowerPath, ".gz") {
+				files = append(files, path)
+			}
+		}
+		return nil
+	})
+
+	return files, err
+}
+
+func GunzipToTemp(gzFilePath string) (string, error) {
+
+	f, err := os.Open(gzFilePath)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	gzfile, err := gzip.NewReader(f)
+	if err != nil {
+		return "", err
+	}
+	defer gzfile.Close()
+
+	// CreateTemp * set a random number to filename
+	tmpFile, err := os.CreateTemp("", "cloudcost_*.csv")
+	if err != nil {
+		return "", err
+	}
+	defer tmpFile.Close()
+
+	_, err = io.Copy(tmpFile, gzfile)
+	if err != nil {
+		return "", err
+	}
+
+	return tmpFile.Name(), nil
 }
