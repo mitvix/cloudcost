@@ -168,6 +168,9 @@ Tempo médio de processamento de arquivos csv
 - ASCII documentation https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - Debug Memory https://golang.org/pkg/runtime/#MemStats  
 
+## Licenciamento
+
+- GNU General Public License v3.0 (Opensource)
 
 ## Nota do Autor e Contato
 
