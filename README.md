@@ -170,8 +170,8 @@ Tempo médio de processamento de arquivos csv
 
 ## Nota do Autor e Contato
 
-* _IMPORTANTE Programar para mim é uma arte, um passa tempo e desenvolvo por hobby, não sou programador profissional e não pretendo ser. Então, ignore código fora das melhores práticas e típicas de um newbie, por isso é Software Livre, encontrou um erro ou formas melhores de fazer algo, arrume! provavelmente há vários deles..._
+* _IMPORTANTE Este projeto é hobby, pode conter código fora das melhores práticas dos "gurus" como Robert Martin, se encontrar erros, formas melhores de fazer algo ou bugs, fique a vontade para arrumar, é por isso que é Software Livre, provavelmente vai encontrar vários deles..._
 
-AlexM. <mitvix@hotmail.com>
+Alex.M <mitvix@hotmail.com>
 Linkedin - https://www.linkedin.com/in/alexandermanfrin/
 
