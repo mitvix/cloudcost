@@ -1,13 +1,13 @@
 # Cloudcost
 [![Go Reference](https://pkg.go.dev/badge/mitvix/cloudcost.svg)](https://pkg.go.dev/mitvix/cloudcost)
 
-Ferramenta de extração e análise dos dados de billing em arquivos (CSV) dos provedores de nuvem como AWS, Azure, Google, Oracle OCI e outras ferramentas.
+Ferramenta de extração e análise dos dados de custos em arquivos (.CSV) e (.GZ) dos provedores de nuvem como AWS, Azure, Google, Oracle OCI e outras ferramentas e padrão FOCUS do FinOps Org.
 
 ## Overview
 
-Este utilitário realiza o processamento sobre os dados gerados em relatórios de billing de Cloud, permitindo a rápida extração de informações de arquivos CSV complexos gerados a partir do Cost Usage Report (CUR) da AWS, Cost Explorer e outros.
+Este utilitário realiza o processamento sobre os dados gerados em relatórios de custo de Cloud de forma individual e recursiva, permitindo a rápida extração de informações de arquivos .CSV e .GZ complexos gerados a partir do Cost Usage Report (CUR) da AWS, Cost Explorer e outras nuvens.
 
-O objetivo desta ferramenta é permitir a análise dos dados de billing dos provedores de nuvem, usando concorrência/paralelismo para permitir a melhor eficiência na leitura de dados extensos e complexos sem a necessidade de soluções de BI.
+O objetivo desta ferramenta é permitir a análise dos dados de custos e consumo dos provedores de nuvem, usando concorrência/paralelismo para permitir a melhor eficiência na leitura de dados extensos e complexos sem a necessidade de soluções de BI.
 
 <details>
 
@@ -88,6 +88,7 @@ Argumentos:
 * -resourcegroup, --resourcegroup `Mostra custos por Resource Group em relatórios Microsoft Azure`
 * -memlimit, --memlimit `Define max memory MB em uso - tenta controlar GC e pode gerar lentidão`
 * -resourceid, --resourceid `Mostra detalhes de recursos por ID/arn (ResourceID)`
+* -resourcetype, --resourcetype `Mostra detalhes de recursos por tipo (ResourceType)`
 * -search, --search `Faz busca nos relatórios min. 2 caracteres`
 * -nopipe, --nopipe `Desativa a pausa na visualização e formatações de texto no terminal`
 * -version, --version `Mostra informações sobre a versão e sai`
