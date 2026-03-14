@@ -80,10 +80,6 @@ func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
 
-func CheckProgressBar(args map[string]string) bool {
-	return global.Barenable && args[global.Flagsheader] != "true"
-}
-
 func ShowProgressBar(ctx context.Context) {
 	// ASCII documentation https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
