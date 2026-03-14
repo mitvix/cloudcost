@@ -175,8 +175,17 @@ func main() {
 	var savings bool
 	var extended bool
 
+	// Create a file temp to write io in tabwriter.NewWriter
+	tmpFile, err := os.CreateTemp("./", "cloudcost_*.log")
+	if err != nil {
+		fmt.Errorf("%v", err)
+	}
+	defer tmpFile.Close() // close temp file
+
+	// Create a Multiwriter do print in Stdout and to a file
+	multi := io.MultiWriter(os.Stdout, tmpFile)
 	// columns tabwriter.(TabIndent|*StripEscape|AlignRight|DiscardEmptyColumns|Debug)
-	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', tabwriter.StripEscape)
+	w := tabwriter.NewWriter(multi, 1, 1, 1, ' ', tabwriter.StripEscape)
 
 	// main maps
 	prodBrlTotal := make(map[string]float64)
@@ -192,12 +201,14 @@ func main() {
 	accountUsdTotal := make(map[string]float64)
 	extendedBrlTotal := make(map[string]float64)
 
-	// set arguments using package flag
+	// main arguments using package flag
 	dirFlag := flag.String(global.Flagdirpath, "", global.Msg_flagdir)
 	accFlag := flag.String(global.Flagaccount, "", global.Msg_flagacc)
 	schFlag := flag.String(global.Flagsearch, "", global.Msg_flagsch)
 
 	verFlag := flag.Bool(global.Flagversion, false, global.Msg_version)
+	hideBar := flag.Bool(global.Flaghidebar, false, global.Msg_hidebar)
+	expFile := flag.Bool(global.Flagexpfile, false, global.Msg_expfile)
 	csvFlag := flag.Bool(global.Flagsheader, false, global.Msg_flaghed)
 	rscFlag := flag.Bool(global.Flagusgtype, false, global.Msg_flagrsc)
 	rscIdet := flag.Bool(global.Flagresrcid, false, global.Msg_flagrid)
@@ -216,6 +227,11 @@ func main() {
 	// ptxMplc := flag.Float64(global.Flagptaxmp, 0, global.Msg_flptxmp)
 
 	flag.Parse()
+
+	// Transform tempFile into local file
+	if !*expFile {
+		defer os.Remove(tmpFile.Name()) // cleanup tmpfile
+	}
 
 	// change resource management from flag
 	if *memLimt > 0 && *memLimt == int64(*memLimt) {
@@ -363,11 +379,8 @@ func main() {
 	// create context to cancel progress bar showProgressBar
 	ctx, cancelWait := context.WithCancel(context.Background())
 
-	// check if progress bar is enabled globally
-	progress_bar := utils.CheckProgressBar(args)
-
-	if progress_bar {
-		// start progress bar parallel
+	// start progress bar in parallel mode
+	if !*hideBar {
 		go utils.ShowProgressBar(ctx)
 	}
 
@@ -431,7 +444,7 @@ func main() {
 	}
 
 	// cancel progress bar
-	if progress_bar {
+	if !*hideBar {
 		timestop := time.Since(timeststart)
 
 		// create context to show wait bar
@@ -555,7 +568,7 @@ func main() {
 	w.Flush()
 
 	fmt.Printf("\n%v\n\n", global.Msg_produt)
-	fmt.Fprintf(w, "%v", global.Product_Header)
+	fmt.Fprintf(w, "\n%v", global.Product_Header)
 
 	// prints products with max char control
 	for pkey, value := range prodBrlTotal {
@@ -770,7 +783,7 @@ func main() {
 
 	// SHOW DEFAULT USAGE
 	fmt.Printf("\n%v\n\n", global.Msg_usage)
-	fmt.Fprintf(w, "\t%v\n", global.Resource_Header)
+	fmt.Fprintf(w, "\n\t%v\n", global.Resource_Header)
 	if repcloud == global.RepAzure {
 		sumusd = sumusd / ptax_flt
 	}
@@ -780,7 +793,7 @@ func main() {
 	// SHOW MARKET PLACE
 	if mpbrltotal > 0 && mpbrltotal == float64(mpbrltotal) { // !math.IsNaN(mpbrltotal) {
 		fmt.Printf("\n%v\n\n", global.Msg_mktpl)
-		fmt.Fprintf(w, "\t%v\n", global.MarketP_Header)
+		fmt.Fprintf(w, "\n\t%v\n", global.MarketP_Header)
 		fmt.Fprintf(w, "\t%v\t\t%.4f\t\t%v %.2f\t\t%v %.2f\n", ptax_flt, feemp_usd, global.Msg_SymblUS, mpusdtotal, global.Msg_SymblBR, mpbrltotal)
 		w.Flush()
 	}
@@ -789,7 +802,7 @@ func main() {
 	if args[global.Flagmarkplc] == "true" {
 		// FIX-ME Need show prodname instead resourcetype
 		fmt.Printf("\n%v\n\n", global.Msg_mktpl)
-		fmt.Fprintf(w, "\t%v\n", global.Detail_Header)
+		fmt.Fprintf(w, "\n\t%v\n", global.Detail_Header)
 		for key, value := range mkplBrlTotal {
 			fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, value, key)
 		}
@@ -800,7 +813,7 @@ func main() {
 	if credtotal != 0 && credtotal == float64(credtotal) {
 		// FIX-ME I need be itereted not only once!!!
 		fmt.Printf("\n%v\n\n", global.Msg_credit)
-		fmt.Fprintf(w, "\t%v\n", global.Desc_Header)
+		fmt.Fprintf(w, "\n\t%v\n", global.Desc_Header)
 		fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, credtotal, cred_name)
 
 	}
@@ -809,7 +822,7 @@ func main() {
 	// SHOW SUPPORT
 	if supptotal != 0 && supptotal == (supptotal) {
 		fmt.Printf("\n%v\n\n", global.Msg_support)
-		fmt.Fprintf(w, "\t%v\n", global.Detail_Header)
+		fmt.Fprintf(w, "\n\t%v\n", global.Detail_Header)
 		//fmt.Fprintf(w, "\t%v %.2f\t%v\n", cursymbol, supptotal, suppname)
 		fmt.Fprintf(w, "\t%v %.2f\t%v %.2f\t%v\n", global.Msg_SymblUS, suppusdtotal, cursymbol, supptotal, suppname)
 	}
@@ -818,7 +831,7 @@ func main() {
 	// SHOW EXTENDED SUPPORT
 	if extended {
 		fmt.Printf("\n%v\n\n", global.Msg_extended)
-		fmt.Fprintf(w, "\t%v\n", global.Desc_Header)
+		fmt.Fprintf(w, "\n\t%v\n", global.Desc_Header)
 		for key, value := range extendedBrlTotal {
 			fmt.Fprintf(w, "\t%v %.2f\t%s\n", cursymbol, value, key)
 		}
@@ -913,12 +926,16 @@ func main() {
 		}
 	}
 
-	if str1 == str2 {
-		fmt.Printf("\n%v %v\t%v\t%v\t%v\n\n", global.Msg_valid, text.Green(global.Msg_ok), msg_conn, text.Magenta(fee_msg), text.Red(str3))
-	} else {
-		fmt.Printf("\n%v %v %v\t%v\t%v\t%v\n", global.Msg_valid, text.Red(global.Msg_error), text.Red(global.Msg_vdiff), msg_conn, text.Magenta(fee_msg), text.Red(str3))
-		fmt.Printf("%v (%v) != %v (%v)\n", global.Msg_sumtotal, str1, global.Msg_sumprodt, str2)
+	// hide end validation if flag --hidebar is present
+	if !*hideBar {
+		if str1 == str2 {
+			fmt.Printf("\n%v %v\t%v\t%v\t%v\n\n", global.Msg_valid, text.Green(global.Msg_ok), msg_conn, text.Magenta(fee_msg), text.Red(str3))
+		} else {
+			fmt.Printf("\n%v %v %v\t%v\t%v\t%v\n", global.Msg_valid, text.Red(global.Msg_error), text.Red(global.Msg_vdiff), msg_conn, text.Magenta(fee_msg), text.Red(str3))
+			fmt.Printf("%v (%v) != %v (%v)\n", global.Msg_sumtotal, str1, global.Msg_sumprodt, str2)
+		}
 	}
+
 	// Aguardar todas as goroutines terminarem
 	wg.Wait()
 }
