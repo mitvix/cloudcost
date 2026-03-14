@@ -24,7 +24,6 @@ var ShowPipe bool = true     // Default configuration for pipe line = true
 var UseColor bool = true     // UseColors determines if package colors will emit colors.
 
 // ProgressBar
-const Barenable bool = true     // Enable/disable Progress Bar (true|false)
 const Barsize int = 39          // ShowProgressBar size
 const Barchar string = "\u2587" // ShowProgressBar character \u220E
 const BarcharWin string = "#"
@@ -70,6 +69,8 @@ const (
 	Flagptax     string = "ptax"
 	Flagptaxmp   string = "ptaxmp"
 	Flagsheader  string = "header"
+	Flaghidebar  string = "hidebar"
+	Flagexpfile  string = "export"
 	Flagusgtype  string = "usagetype"
 	Flagresrcid  string = "resourceid"
 	Flagresrtype string = "resourcetype"
@@ -89,6 +90,8 @@ const (
 
 	Msg_flagptax  string = "Define PTAX padrão manualmente (requer --path)"
 	Msg_flaghed   string = "Mostra o cabeçalho do arquivo CSV (requer --path)"
+	Msg_hidebar   string = "Oculta a barra de carregamento loading bar (requer --path)"
+	Msg_expfile   string = "Cria arquivo local .log com conteúdo da análise (requer --path)"
 	Msg_flagrsc   string = "Mostra detalhes do tipo do recurso (UsageType)"
 	Msg_flagrsg   string = "Mostra custos por Resource Group em relatórios Microsoft Azure"
 	Msg_flagrid   string = "Mostra detalhes de recursos por ID/arn (ResourceID)"
@@ -171,7 +174,7 @@ var (
 	Credits      []string = []string{"Credit"}                              // strings to search credits
 	Support      []string = []string{"AWS Support (Enterprise)"}            // strings to search support
 	Savings      []string = []string{"Savings"}                             // strings to search Savings
-	ExtendedSupp []string = []string{"ExtendedSupport"}                     //  string to search Extended Support
+	ExtendedSupp []string = []string{"xtendedSupport"}                      // string to search [E]xtendedSupport or [e]xtendedSupport
 )
 
 // Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer, Focus/OCI)
