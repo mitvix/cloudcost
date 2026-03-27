@@ -175,18 +175,6 @@ func main() {
 	var savings bool
 	var extended bool
 
-	// Create a file temp to write io in tabwriter.NewWriter
-	tmpFile, err := os.CreateTemp("./", "cloudcost_*.log")
-	if err != nil {
-		fmt.Errorf("%v", err)
-	}
-	defer tmpFile.Close() // close temp file
-
-	// Create a Multiwriter do print in Stdout and to a file
-	multi := io.MultiWriter(os.Stdout, tmpFile)
-	// columns tabwriter.(TabIndent|*StripEscape|AlignRight|DiscardEmptyColumns|Debug)
-	w := tabwriter.NewWriter(multi, 1, 1, 1, ' ', tabwriter.StripEscape)
-
 	// main maps
 	prodBrlTotal := make(map[string]float64)
 	prodUsdTotal := make(map[string]float64)
@@ -228,10 +216,28 @@ func main() {
 
 	flag.Parse()
 
-	// Transform tempFile into local file
-	if !*expFile {
-		defer os.Remove(tmpFile.Name()) // cleanup tmpfile
+	var iowriter io.Writer
+	if *expFile {
+		// Create a file temp to write io in tabwriter.NewWriter
+		tmpFile, err := os.CreateTemp("./", "cloudcost_*.log")
+		if err != nil {
+			fmt.Errorf("%v", err)
+		}
+		defer tmpFile.Close()
+
+		// Transform tempFile into local file or remove it
+		if !*expFile {
+			defer os.Remove(tmpFile.Name()) // cleanup tmpfile
+		}
+
+		// Create a Multiwriter do print in Stdout and to a file
+		iowriter = io.MultiWriter(os.Stdout, tmpFile)
+	} else {
+		iowriter = io.MultiWriter(os.Stdout)
 	}
+
+	// columns tabwriter.(TabIndent|*StripEscape|AlignRight|DiscardEmptyColumns|Debug)
+	w := tabwriter.NewWriter(iowriter, 1, 1, 1, ' ', tabwriter.StripEscape)
 
 	// change resource management from flag
 	if *memLimt > 0 && *memLimt == int64(*memLimt) {
@@ -385,6 +391,16 @@ func main() {
 	}
 
 	// MAIN GOROUTINE PROCCESS
+
+	// Temporary concatenate files
+	fullCsvFile, err := os.OpenFile("fullcsv.csv", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Printf("Erro ao criar arquivo final: %v\n", err)
+		return
+	}
+	defer fullCsvFile.Close()
+	isFirstFile := true
+
 	for i, filename := range files {
 		// limit max files to analysis
 		if global.Max_limitfiles > 0 && i >= global.Max_limitfiles {
@@ -406,6 +422,34 @@ func main() {
 
 			// Set filename with temp file gunzipped
 			filename = tempPath
+
+			// concatenate files (origin)
+			srcFile, err := os.Open(tempPath)
+			if err != nil {
+				fmt.Errorf("%v", err)
+			}
+
+			if isFirstFile {
+				_, err = io.Copy(fullCsvFile, srcFile)
+				isFirstFile = false // to control first line header of file
+			} else {
+				scanner := bufio.NewScanner(srcFile)
+
+				// The file pointer is put in 1º column in the if
+				if scanner.Scan() {
+					// the second file pointer was in the second line and beyond
+					for scanner.Scan() {
+						_, err = fullCsvFile.WriteString(scanner.Text() + "\n")
+					}
+				}
+				err = scanner.Err()
+			}
+
+			defer srcFile.Close()
+			if err != nil {
+				fmt.Errorf("%v", err)
+			}
+
 		}
 
 		// identify default rune (delimiter) from csv
