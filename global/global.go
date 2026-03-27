@@ -33,7 +33,7 @@ const InnerBar string = "[ ....................................... ]" // 39 posi
 const (
 	Program  string = "Cloud Cost Report Reader cCRr"
 	Codename string = "codename MightyMouse"
-	Version  string = "v0.2.1-2026-03-11090811-42f34b7149cdd2eb5947144bab436325"
+	Version string = "v0.2.11-2026-03-26114324-1f1587710f5d14c6d1b69f931bf74d82"
 )
 
 // Main Strings and Values
@@ -187,8 +187,8 @@ var (
 	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType", "ServiceCategory"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
 	ResourceType  = []string{"Resource Type", "ResourceType"}                                    // ResourceType Focus/OCI
 	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId", "ResourceId"}
-	ResourceCost  = []string{"Resource Cost", "EffectiveCost"} // EffectiveCost is the end price in Focus/OCI
-	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"}
+	ResourceCost  = []string{"Resource Cost", "EffectiveCost"}                                                          // OCI EffectiveCost is the end price in Focus/OCI / ListCost
+	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"} // OCI BilledCost
 	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode", "BillingCurrency"}
 	ReportCloud   = []string{"aws", "azure", "google", "huawei", "oci"}
 )
