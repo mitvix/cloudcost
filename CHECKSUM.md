@@ -1,13 +1,12 @@
-cloudcost v0.2.1 Codename MightyMouse 2026-03-12232758 e30df1ce2ef2ba24382663740b178d27
-
-3b9f548fc2e775f278d9a759377f9c4c679fab63  ./main.go
+cloudcost v0.2.11 Codename MightyMouse 2026-03-26114324 1f1587710f5d14c6d1b69f931bf74d82
+8f3e52b4a201049acd43ab60fe567937308086a9  ./main.go
 c001dd9af7d3f0259519c7184efb5f00c8efd24f  ./utils/utils.go
 4b1e95251ac099366d65d55382212efd6f2a9657  ./README.md
 332e4f74462ef7f74a9a6fcea5e6c47a2578d7ce  ./text/color.go
-e0bc5368999cbb9dc82e627ae1675b9adff80e23  ./cloudcost
+22f67e46da433e44dd58879ff17f07bf435699c4  ./cloudcost
 41844eca279370d887ec50d408ed669a2ea4f4e5  ./go.sum
-c5e772f60267fa100f8e0984f97df3cd38c26ff0  ./CHECKSUM.md
+b9ad01c3012258170f097757c4666f6d974dd36e  ./CHECKSUM.md
 f4fa0282075f69f26ae828f9142d56408d585c6d  ./bin/gopls
-58bc27267363d8c3fe5d0c7314941a2d81687a9a  ./global/global.go
+51b86cb0cedb7359acab14b0e4b7a5af21792f3d  ./global/global.go
 b71b3c029eb98d5bb9c9312df6e078a762ae260b  ./go.mod
-d7faac921794418d3e006141a3a229b5296bf382  ./buildversion.sh
+53af075b1834c5ce8c5738c2fee9ce6254ec6166  ./buildversion.sh
