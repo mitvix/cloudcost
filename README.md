@@ -81,6 +81,7 @@ Argumentos:
 * -fee, --fee `Define fator de consumo padrão ex: --fee 1.09 (requer --path)`
 * -feemp, --feemp `Define fator de consumo Market Place ex: --feemp 1.7550 (requer --path)`
 * -ptax, --ptax `Define o Dólar (PTAX) de consumo padrão (requer --path)`
+* -concate, --concate `Concatena o conteúdo de cada arquivo CSV em um único aquivo local (requer --path)`
 * -marketplace, --marketplace `Mostra os detalhes de recursos do Market Place`
 * -header, --header `Mostra o cabeçalho do arquivo CSV (requer --path)`
 * -account, --account `Filtro de análise por conta ex: --account 868884350453,443786768377 (requer --path)`
