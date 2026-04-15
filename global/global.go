@@ -33,7 +33,7 @@ const InnerBar string = "[ ....................................... ]" // 39 posi
 const (
 	Program  string = "Cloud Cost Report Reader cCRr"
 	Codename string = "codename MightyMouse"
-	Version string = "v0.2.11-2026-03-26114324-1f1587710f5d14c6d1b69f931bf74d82"
+	Version string = "v0.2.11-2026-04-14214513-2142fa34fd226ac57f0c2d5ef93a0182"
 )
 
 // Main Strings and Values
@@ -47,7 +47,7 @@ const (
 
 	// define report cloud
 	RepAws    string = "aws"
-	RepOci    string = "oci"
+	RepOci    string = "Oracle"
 	RepAzure  string = "azure"
 	RepGoogle string = "google"
 	RepHuawei string = "huawei"
@@ -71,6 +71,7 @@ const (
 	Flagsheader  string = "header"
 	Flaghidebar  string = "hidebar"
 	Flagexpfile  string = "export"
+	Flagexpconc  string = "concate"
 	Flagusgtype  string = "usagetype"
 	Flagresrcid  string = "resourceid"
 	Flagresrtype string = "resourcetype"
@@ -92,6 +93,7 @@ const (
 	Msg_flaghed   string = "Mostra o cabeçalho do arquivo CSV (requer --path)"
 	Msg_hidebar   string = "Oculta a barra de carregamento loading bar (requer --path)"
 	Msg_expfile   string = "Cria arquivo local .log com conteúdo da análise (requer --path)"
+	Msg_expconc   string = "Concatena o conteúdo de cada arquivo CSV em um único aquivo local (requer --path)"
 	Msg_flagrsc   string = "Mostra detalhes do tipo do recurso (UsageType)"
 	Msg_flagrsg   string = "Mostra custos por Resource Group em relatórios Microsoft Azure"
 	Msg_flagrid   string = "Mostra detalhes de recursos por ID/arn (ResourceID)"
@@ -179,18 +181,19 @@ var (
 
 // Field Position on CSV files (Cmp, Cmp GOV, CUR, Cost Explorer, Focus/OCI)
 var (
-	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate", "BillingPeriodStart"}
-	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate", "BillingPeriodEnd"}
-	CompanyName   = []string{"Company Name", "bill/InvoicingEntity", "PayerAccountName", "SubAccountName"}
-	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName", "BillingAccountId"}
-	ProductName   = []string{"Product Name", "product/ProductName", "ProductName", "ChargeDescription"}
-	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType", "ServiceCategory"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
-	ResourceType  = []string{"Resource Type", "ResourceType"}                                    // ResourceType Focus/OCI
-	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId", "ResourceId"}
-	ResourceCost  = []string{"Resource Cost", "EffectiveCost"}                                                          // OCI EffectiveCost is the end price in Focus/OCI / ListCost
-	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost"} // OCI BilledCost
-	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode", "BillingCurrency"}
-	ReportCloud   = []string{"aws", "azure", "google", "huawei", "oci"}
+	StartDate     = []string{"Start Date", "bill/BillingPeriodStartDate", "BillingPeriodStartDate", "BillingPeriodStart", "DataDeInícioDoPeríodoDeCobrança (BillingPeriodStartDate)"}
+	EndDate       = []string{"End Date", "bill/BillingPeriodEndDate", "BillingPeriodEndDate", "BillingPeriodEnd", "DataDeTérminoDoPeríodoDeCobrança (BillingPeriodEndDate)"}
+	CompanyName   = []string{"Company Name", "bill/InvoicingEntity", "PayerAccountName", "SubAccountName", "BillingAccountName", "NomeDaContaDeCobrança (BillingAccountName)"}
+	UsageAccount  = []string{"Usage Account", "lineItem/UsageAccountId", "LinkedAccountName", "BillingAccountId", "IdDaContaDeCobrança (BillingAccountId)"}
+	ProductName   = []string{"Product Name", "product/ProductName", "ProductName", "ChargeDescription", "CategoriaDoMedidor (MeterCategory)"}
+	UsageType     = []string{"Usage Type", "UsageType", "lineItem/UsageType", "ServiceCategory", "Produto (Product)"} // 1:1 "Cmp","CExplorer", CUR...  TO-DO list Azure, Google
+	ResourceType  = []string{"Resource Type", "ResourceType", "ServiçoConsumido (ConsumedService)"}                   // ResourceType Focus/OCI
+	ResourceIdent = []string{"Resource Identifier", "lineItem/ResourceId", "ResourceId", "IdDoRecurso (ResourceId)"}
+	ResourceCost  = []string{"Resource Cost", "EffectiveCost"}                                                                          // OCI EffectiveCost is the end price in Focus/OCI / ListCost
+	FinalCost     = []string{"Final Cost", "Final Price (R$)", "CostBeforeTax", "lineItem/UnblendedCost", "BilledCost", "Custo (Cost)"} // OCI BilledCost
+	ListCost      = []string{"ListCost"}                                                                                                // OCI ListCost (List Price)
+	CurrencyCode  = []string{"lineItem/CurrencyCode", "CurrencyCode", "BillingCurrency", "MoedaDeCobrança (BillingCurrency)"}
+	ReportCloud   = []string{"aws", "azure", "Azure", "google", "huawei", "Provider"}
 )
 
 var (
