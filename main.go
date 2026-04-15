@@ -32,6 +32,7 @@ type Billing struct {
 	sdate    []string
 	fdate    []string
 	products []string
+	listcost []string
 	rscename []string
 	currency []string
 	totalUSD float64
@@ -49,6 +50,7 @@ type Fields struct {
 	pos_products int
 	pos_usagtype int
 	pos_costusd  int
+	pos_listcost int
 	pos_costbrl  int
 	pos_currency int
 	pos_resident int
@@ -64,6 +66,12 @@ type Ptax struct {
 
 type ProdCount struct {
 	product  string
+	cost_usd float64
+	cost_brl float64
+}
+
+type ListCount struct {
+	listcost string
 	cost_usd float64
 	cost_brl float64
 }
@@ -94,6 +102,7 @@ type RsceType struct {
 
 var accountCount []AccountCount
 var prodCount []ProdCount
+var listCount []ListCount
 var rsceCount []RsceCount
 var rsceIdent []RsceIdent
 var rsceType []RsceType
@@ -111,6 +120,7 @@ var (
 	company,
 	accounts,
 	products,
+	listcost,
 	cred_name,
 	currency []string
 )
@@ -178,6 +188,8 @@ func main() {
 	// main maps
 	prodBrlTotal := make(map[string]float64)
 	prodUsdTotal := make(map[string]float64)
+	listBrlTotal := make(map[string]float64)
+	listUsdTotal := make(map[string]float64)
 	rsceBrlTotal := make(map[string]float64)
 	rsceUsdTotal := make(map[string]float64)
 	mkplBrlTotal := make(map[string]float64)
@@ -197,6 +209,7 @@ func main() {
 	verFlag := flag.Bool(global.Flagversion, false, global.Msg_version)
 	hideBar := flag.Bool(global.Flaghidebar, false, global.Msg_hidebar)
 	expFile := flag.Bool(global.Flagexpfile, false, global.Msg_expfile)
+	expConc := flag.Bool(global.Flagexpconc, false, global.Msg_expconc)
 	csvFlag := flag.Bool(global.Flagsheader, false, global.Msg_flaghed)
 	rscFlag := flag.Bool(global.Flagusgtype, false, global.Msg_flagrsc)
 	rscIdet := flag.Bool(global.Flagresrcid, false, global.Msg_flagrid)
@@ -377,10 +390,6 @@ func main() {
 	if *ptxCost != 0 {
 		args[global.Flagptax] = fmt.Sprintf("%.4f", *ptxCost)
 	}
-	// // set flag ptax market place
-	// if *ptxMplc != 0 {
-	// 	args[global.Flagptaxmp] = fmt.Sprintf("%.4f", *ptxMplc)
-	// }
 
 	// create context to cancel progress bar showProgressBar
 	ctx, cancelWait := context.WithCancel(context.Background())
@@ -392,14 +401,18 @@ func main() {
 
 	// MAIN GOROUTINE PROCCESS
 
-	// Temporary concatenate files
-	fullCsvFile, err := os.OpenFile("fullcsv.csv", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		fmt.Printf("Erro ao criar arquivo final: %v\n", err)
-		return
+	// Export full concatenated csv file
+	var isFirstFile bool
+	var fullCsvFile *os.File
+	if *expConc {
+		// Temporary concatenate files
+		timestamp := time.Now().Format("20060102150405")
+		fileName := fmt.Sprintf("fullcsv_%s.csv", timestamp)
+		fullCsvFile, _ = os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+
+		defer fullCsvFile.Close()
+		isFirstFile = true
 	}
-	defer fullCsvFile.Close()
-	isFirstFile := true
 
 	for i, filename := range files {
 		// limit max files to analysis
@@ -423,31 +436,34 @@ func main() {
 			// Set filename with temp file gunzipped
 			filename = tempPath
 
-			// concatenate files (origin)
-			srcFile, err := os.Open(tempPath)
-			if err != nil {
-				fmt.Errorf("%v", err)
-			}
+			if *expConc {
 
-			if isFirstFile {
-				_, err = io.Copy(fullCsvFile, srcFile)
-				isFirstFile = false // to control first line header of file
-			} else {
-				scanner := bufio.NewScanner(srcFile)
-
-				// The file pointer is put in 1º column in the if
-				if scanner.Scan() {
-					// the second file pointer was in the second line and beyond
-					for scanner.Scan() {
-						_, err = fullCsvFile.WriteString(scanner.Text() + "\n")
-					}
+				// concatenate files (origin)
+				srcFile, err := os.Open(tempPath)
+				if err != nil {
+					fmt.Errorf("%v", err)
 				}
-				err = scanner.Err()
-			}
 
-			defer srcFile.Close()
-			if err != nil {
-				fmt.Errorf("%v", err)
+				if isFirstFile {
+					_, err = io.Copy(fullCsvFile, srcFile)
+					isFirstFile = false // to control first line header of file
+				} else {
+					scanner := bufio.NewScanner(srcFile)
+
+					// The file pointer is put in 1º column in the if
+					if scanner.Scan() {
+						// the second file pointer was in the second line and beyond
+						for scanner.Scan() {
+							_, err = fullCsvFile.WriteString(scanner.Text() + "\n")
+						}
+					}
+					err = scanner.Err()
+				}
+
+				defer srcFile.Close()
+				if err != nil {
+					fmt.Errorf("%v", err)
+				}
 			}
 
 		}
@@ -482,6 +498,7 @@ func main() {
 		fdate = utils.RemoveDuplicate(&billing.fdate)
 		accounts = utils.RemoveDuplicate(&billing.accounts)
 		products = utils.RemoveDuplicate(&billing.products)
+		listcost = utils.RemoveDuplicate(&billing.listcost)
 		currency = utils.RemoveDuplicate(&billing.currency)
 		platform = billing.platform
 		repcloud = billing.repcloud
@@ -516,10 +533,22 @@ func main() {
 		cotacao = <-chp
 
 		// take care with this s*
-		date_str = sdate[i][:10]
+		// Fix 2026-04-06 for dates from azure (mm/dd/yyyy) avoid out of bound array
+		lenght := len(sdate[i])
+		if lenght > 10 {
+			date_str = sdate[i][:10]
+		} else {
+			date_str = sdate[i]
+		}
 
 		// cut initial date using length bytes
-		date_end = fdate[i][:10] // cut end date using length bytes
+		// Fix 2026-04-06 for dates from azure (mm/dd/yyyy) avoid out of bound array
+		lenght = len(fdate[i])
+		if lenght > 10 {
+			date_end = fdate[i][:10] // cut end date using length bytes
+		} else {
+			date_end = fdate[i]
+		}
 
 		// proccess ptax response in Online mode (cotacao.Offline == false)
 		if !cotacao.Offline {
@@ -573,6 +602,12 @@ func main() {
 		prodUsdTotal[prodCount[k].product] += value.cost_usd
 	}
 
+	// sum values by listcost
+	for k, value := range listCount {
+		listBrlTotal[listCount[k].listcost] += value.cost_brl
+		listUsdTotal[listCount[k].listcost] += value.cost_usd
+	}
+
 	// sum values by accounts
 	for k, value := range accountCount {
 		accountBrlTotal[accountCount[k].account] += value.cost_brl
@@ -603,9 +638,12 @@ func main() {
 	fmt.Printf("%v\n\n", global.Msg_accout)
 	fmt.Fprintf(w, "%v", global.Account_Header)
 	for key, value := range accountBrlTotal {
-		if repcloud == global.RepAzure {
+		if repcloud == global.RepAzure ||
+			repcloud == global.RepOci ||
+			repcloud == global.RepGoogle {
 			value = value / ptax_flt
 		}
+
 		vtotal := accountUsdTotal[key] // get usd value for each account
 		fmt.Fprintf(w, "\t%v\t\t%v %.4f\t\t%v %.4f\t\n", key, global.Msg_SymblUS, value, cursymbol, vtotal)
 	}
@@ -623,11 +661,16 @@ func main() {
 
 		vtotal := prodUsdTotal[pkey] // get usd value for each resource
 
-		if repcloud == global.RepAzure {
+		// TO-DO add new Column (Pricelist OCI)
+
+		if repcloud == global.RepAzure ||
+			repcloud == global.RepOci ||
+			repcloud == global.RepGoogle {
 			vtotal = vtotal / ptax_flt
 		}
+
 		// print product name, usd and brl costs
-		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\n", pkey, global.Msg_SymblUS, vtotal, cursymbol, value)
+		fmt.Fprintf(w, "\t%v\t %v %.4f\t\t%v %.4f\t\t\n", pkey, global.Msg_SymblUS, vtotal, cursymbol, value)
 
 		checksum += value
 		// run slice to check string (credprefix) into string (key)
@@ -728,7 +771,7 @@ func main() {
 
 	if *rscGrop {
 		// load only for Azure reports
-		if repcloud == global.RepAzure {
+		if repcloud == global.RepAzure || repcloud == global.RepOci || repcloud == global.RepGoogle {
 			// Create aux map to store sum
 			sumById := map[string]float64{}
 			var strId string
@@ -825,13 +868,27 @@ func main() {
 		fee_sval = fmt.Sprintf("%.4f", fee_value)
 	}
 
-	// SHOW DEFAULT USAGE
+	// looks for OCI List Cost (in BRL only) to print total List Price Value
+	var ocipricelist float64
+	var ociprintlist, pricelistlabel string
+	if repcloud == global.RepOci {
+		for _, value := range listBrlTotal {
+			ocipricelist += value
+		}
+		pricelistlabel = "PRICE LIST"
+		ociprintlist = fmt.Sprintf("R$%.2f", ocipricelist)
+	}
+
+	// SHOW LABEL Usage: only
 	fmt.Printf("\n%v\n\n", global.Msg_usage)
-	fmt.Fprintf(w, "\n\t%v\n", global.Resource_Header)
-	if repcloud == global.RepAzure {
+
+	// SHOW USAGE DETAILS (START, END, PTAX, FACTOR, USAGE USD, USAGE BRL PRICELIST(optional for OCI only)...)
+	fmt.Fprintf(w, "\n\t%v\t %s\n", global.Resource_Header, pricelistlabel)
+	if repcloud == global.RepAzure || repcloud == global.RepOci || repcloud == global.RepGoogle {
 		sumusd = sumusd / ptax_flt
 	}
-	fmt.Fprintf(w, "\t%v\t\t%v\t\t%v\t\t%v\t\t%v %.2f\t\t%v %.2f\n", date_str, date_end, ptax_valdate, fee_sval, global.Msg_SymblUS, sumusd, cursymbol, usage)
+
+	fmt.Fprintf(w, "\t%v\t\t%v\t\t%v\t\t%v\t\t%v %.2f\t\t%v%.2f\t\t%s\n", date_str, date_end, ptax_valdate, fee_sval, global.Msg_SymblUS, sumusd, cursymbol, usage, ociprintlist)
 	w.Flush()
 
 	// SHOW MARKET PLACE
@@ -1027,6 +1084,11 @@ func readCSV(filename *string, args map[string]string, ch chan Billing, wg *sync
 				fp.pos_costusd = v // cost usd position
 			}
 			fp.pos_costbrl = v // cost brl position
+		case slices.Contains(global.ListCost, k):
+			if *cloudcsv != global.Cmp {
+				fp.pos_listcost = v // OCI ListCost position
+			}
+			fp.pos_listcost = v // OCI ListCost position
 		case slices.Contains(global.ReportCloud, k):
 			fp.pos_repcloud = v // Report Cloud
 		case slices.Contains(global.CurrencyCode, k):
@@ -1104,19 +1166,26 @@ func appendData(data *Billing, rln []string, cloudcsv *string, fp Fields) *Billi
 	data.accounts = append(data.accounts, rln[fp.pos_accounts])
 	data.products = append(data.products, rln[fp.pos_products])
 
+	data.listcost = append(data.listcost, rln[fp.pos_products])
+
 	data.rscename = append(data.rscename, rln[fp.pos_usagtype])
 	data.currency = append(data.currency, rln[fp.pos_currency])
 
 	susd := strings.Replace(rln[fp.pos_costusd], ",", ".", 1)
 	sbrl := strings.Replace(rln[fp.pos_costbrl], ",", ".", 1)
 
+	// OCI List Cost price field
+	lbrl := strings.Replace(rln[fp.pos_listcost], ",", ".", 1)
+
 	fusd, _ := strconv.ParseFloat(susd, 64)
 	fbrl, _ := strconv.ParseFloat(sbrl, 64)
+	flbrl, _ := strconv.ParseFloat(lbrl, 64)
 
 	data.totalUSD += fusd
 	data.totalBRL += fbrl
 
 	prodCount = append(prodCount, ProdCount{rln[fp.pos_products], fusd, fbrl})
+	listCount = append(listCount, ListCount{rln[fp.pos_listcost], flbrl, flbrl})
 	rsceCount = append(rsceCount, RsceCount{rln[fp.pos_usagtype], fusd, fbrl})
 	rsceIdent = append(rsceIdent, RsceIdent{rln[fp.pos_resident], fusd, fbrl})
 	rsceType = append(rsceType, RsceType{rln[fp.pos_restype], fusd, fbrl})
